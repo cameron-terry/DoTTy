@@ -33,4 +33,4 @@ class ImageConv:
         db.convert(filename, debug=debug)
 
 if __name__ == '__main__':
-    ic = ImageConv('../pepe.jpg', leave_size=True)
+    ic = ImageConv('../img/pepe.jpg', leave_size=True)

@@ -1,6 +1,8 @@
 import numpy as np
 import time, sys
 
+# TODO: add explicit relative filepath output destination functionality
+
 # update_progress() : Displays or updates a console progress bar
 ## Accepts a float between 0 and 1. Any int will be converted to a float.
 ## A value under 0 represents a 'halt'.
@@ -298,7 +300,7 @@ class DotBlock:
     
     def convert(self, filename, debug=False):
         k = 0
-
+        filename = "../out/" + filename
         with open(filename, 'w') as f:
             print("[*] Writing to {}...\n".format(filename))
             show_progress = True

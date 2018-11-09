@@ -34,7 +34,7 @@ elif len(sys.argv) == 5:
             leave_size = "l" in sys.argv[4]
             debug      = "d" in sys.argv[4]
 
-            ic = ImageConv(sys.argv[1], filename=sys.argv[2], size=((sys.argv[3].split(",")[0], sys.argv[3].split(",")[1])), leave_size=leave_size, debug=debug)
+            ic = ImageConv(sys.argv[1], filename=sys.argv[2], size=(int(sys.argv[3].split(",")[0]), int(sys.argv[3].split(",")[1])), leave_size=leave_size, debug=debug)
         except IOError:
             die("[!] Operation failed!\n[!] File could either not be found, opened, or created." + 
                     "\n[*] Note: dotty only supports JPEG files.")
@@ -42,7 +42,7 @@ elif len(sys.argv) == 4:
     valid_flags = sys.argv[3] in ["-d", "-l", "-dl", "-ld"]
     if not valid_flags:
         try:
-            ic = ImageConv(sys.argv[1], filename=sys.argv[2], size=((sys.argv[3].split(",")[0], sys.argv[3].split(",")[1])))
+            ic = ImageConv(sys.argv[1], filename=sys.argv[2], size=(int(sys.argv[3].split(",")[0]), int(sys.argv[3].split(",")[1])))
         except IOError:
             die("[!] Operation failed!\n[!] File could either not be found, opened, or created." + 
                         "\n[*] Note: dotty only supports JPEG files.")
@@ -60,7 +60,7 @@ elif len(sys.argv) == 3:
     if not valid_flags:
         try:
             ic = ImageConv(sys.argv[1], size=((int(sys.argv[2].split(",")[0]), int(sys.argv[2].split(",")[1]))))          
-        except IOError:
+        except ValueError:
             try:
                 ic = ImageConv(sys.argv[1], filename=sys.argv[2])
             except IOError:
