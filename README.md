@@ -1,4 +1,6 @@
 # About
+![Dotty output screenshot](/img/dotty_ss.png)
+
 Dotty takes `.JPEG` files and outputs a text file with the image transformed into a grid of Braille symbols.
 Dotty scans the `.JPEG` in 4x2 chunks, creating a Braille symbol for each chunk.
 
