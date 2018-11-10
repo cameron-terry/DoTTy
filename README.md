@@ -72,6 +72,7 @@ Manhattan (1242 × 810)
 ![Manhattan](/img/ss/dotty_ss4.png)
 
 Golden Gate Bridge (1800 x 1350)
+--------------------------------
 ![Golden Gate Bridge](/img/ss/dotty_ss8.png)
 
 Sun Sets Sail -- Rob Gonsalves (1600 x 788)
