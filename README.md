@@ -1,4 +1,6 @@
-# About
+About
+=====
+
 ![Dotty output screenshot](/img/ss/dotty_ss.png)
 
 Dotty takes image files and outputs a text file with the image transformed into a grid of Braille symbols.
@@ -6,7 +8,10 @@ Dotty takes image files and outputs a text file with the image transformed into 
 Dotty scans the image in 4x2 chunks, creating a Braille symbol for each chunk.
 The output is stored in the `out/` directory.
 
-Dotty runs on Python 3.
+Requirements
+------------
++ Python 3
++ Numpy 
 
 ### How to Use
 `$ python dotty.py <path_to_image> [output_file] [sizeX,sizeY] [args]`
@@ -32,7 +37,7 @@ Specifying the output file is a text file is not necessary.
     > `$ python dotty.py ../img/examples/pepe.jpg -d`
 
 * Create a full-sized (as close as possible to original) text file of `marilyn_monroe.jpg` and output to `../out/marilyn.txt`:
-    > `$ python dotty.py ../img/examples/pepe.jpg marilyn.txt -l`
+    > `$ python dotty.py ../img/examples/marilyn_monroe.jpg marilyn.txt -l`
 
 * Create a `120x60`-sized (15 rows, 30 columns) text file of `bell.jpg` and output to `../out/output.txt`:
     > `$ python dotty.py ../img/examples/bell.jpg 120,60`
