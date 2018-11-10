@@ -43,8 +43,8 @@ try:
                                                                         int(sys.argv[3].split(",")[1]) ), 
                                                                         leave_size=leave_size, debug=debug, invert=invert)
             except IOError:
-                die("[!] Operation failed!\n[!] File could not be written.\n[*] The input file may be too large.\n \
-                    [*] The file may have been created, and may contain partial data.")
+                die("[!] Operation failed!\n[!] File could not be written.\
+                    \n[*] The file may have been created, and may contain partial data.")
     elif len(sys.argv) == 4:
         valid_flags = sys.argv[3] in flags
         if not valid_flags:
@@ -54,8 +54,8 @@ try:
             except ValueError:
                 die("[!] Operation failed!\n[!] Bad arguments for size")
             except IOError:
-                die("[!] Operation failed!\n[!] File could not be written.\n \
-                    [*] The file may have been created, and may contain partial data.")
+                die("[!] Operation failed!\n[!] File could not be written.\
+                    \n[*] The file may have been created, and may contain partial data.")
         else:
             try:
                 leave_size = "l" in sys.argv[3]
@@ -69,8 +69,8 @@ try:
                 try:
                     ic = ImageConv(sys.argv[1], filename=sys.argv[2], leave_size=leave_size, debug=debug, invert=invert)
                 except IOError:
-                    die("[!] Operation failed!\n[!] File could not be written.\n \
-                    [*] The file may have been created, and may contain partial data.")           
+                    die("[!] Operation failed!\n[!] File could not be written.\
+                    \n[*] The file may have been created, and may contain partial data.")           
     elif len(sys.argv) == 3:
         valid_flags = sys.argv[2] in flags
         if not valid_flags:
@@ -81,8 +81,8 @@ try:
                 try:
                     ic = ImageConv(sys.argv[1], filename=sys.argv[2])
                 except IOError:
-                    die("[!] Operation failed!\n[!] File could not be written.\n \
-                    [*] The file may have been created, and may contain partial data.")
+                    die("[!] Operation failed!\n[!] File could not be written.\
+                    \n[*] The file may have been created, and may contain partial data.")
         else:
             try:
                 leave_size = "l" in sys.argv[2]
@@ -91,14 +91,14 @@ try:
 
                 ic = ImageConv(sys.argv[1], leave_size=leave_size, debug=debug, invert=invert)
             except IOError:
-                die("[!] Operation failed!\n[!] File could not be written.\n \
-                    [*] The file may have been created, and may contain partial data.")
+                die("[!] Operation failed!\n[!] File could not be written.\
+                    \n[*] The file may have been created, and may contain partial data.")
     elif len(sys.argv) == 2:    
         try:
             ic = ImageConv(sys.argv[1])
         except IOError:
-            die("[!] Operation failed!\n[!] File could not be written.\n \
-                    [*] The file may have been created, and may contain partial data.")
+            die("[!] Operation failed!\n[!] File could not be written.\
+                    \n[*] The file may have been created, and may contain partial data.")
     else:
         die('''
         Usage: python dotty.py <path_to_image> [output_file] [sizeX,sizeY] [args]

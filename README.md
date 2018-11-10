@@ -20,11 +20,11 @@ Usage
 `$ python dotty.py <path_to_image> [output_file] [sizeX,sizeY] [args]`
 
 #### Args
-| arg  | command                                    |
-|------|--------------------------------------------|
-| `-d` | debug (send output to console)             |
-| `-l` | leave size unchanged (as close as possible |
-| `-n` | no invert (inverts image by default)       |
+| arg  | command                                     |
+|------|---------------------------------------------|
+| `-d` | debug (send output to console)              |
+| `-l` | leave size unchanged (as close as possible) |
+| `-n` | no invert (inverts image by default)        |
 
 #### Command-line usage
 The path to the image should *always* be after `dotty.py`.
