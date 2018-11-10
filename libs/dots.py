@@ -1,20 +1,31 @@
 import numpy as np
 import time, sys
 
-# TODO: add explicit relative filepath output destination functionality
+from helpers import *
 
-# update_progress() : Displays or updates a console progress bar
-## Accepts a float between 0 and 1. Any int will be converted to a float.
-## A value under 0 represents a 'halt'.
-## A value at 1 or bigger represents 100%
-def update_progress(progress):
-    barLength = 10 # Modify this to change the length of the progress bar
+def update_progress(progress, bar_length=10):
+    """
+    Updates progress on action.
+
+    Args:
+        progress (float): The current progress as a percentage.
+        bar_length (int, optional): The size of the progress bar 
+                (chars, excluding brackets).
+    Returns: 
+        1 on completion, 0 otherwise
+    """   
     status = ""
+    if isinstance(bar_length, float):
+        bar_length = int(bar_length)
+    if not isinstance(bar_length, int):
+        progress = 0
+        status = "[!] Expected int for bar_length.\r\n"
+        return 1
     if isinstance(progress, int):
         progress = float(progress)
     if not isinstance(progress, float):
         progress = 0
-        status = "error: progress var must be float\r\n"
+        status = "[!] Expected float for progress.\r\n"
         return 1
     if progress < 0:
         progress = 0
@@ -24,16 +35,41 @@ def update_progress(progress):
         progress = 1
         status = "Done...\r\n"
         return 1
-    block = int(round(barLength*progress))
-    text = "\rWorking: [{0}] {1}% {2}".format( "#"*block + "-"*(barLength-block), round(progress*100, 2), status)
+
+    block = int(round(bar_length*progress))
+    text = "\rWorking: [{0}] {1}% {2}".format( "#"*block + "-"*(bar_length-block), round(progress*100, 2), status)
+
     sys.stdout.write(text)
     sys.stdout.flush()
     
     return 0
 
 class DotBlock:
+    """
+    Holds image data and can convert image to a series of Braille symbols.
+
+    Attributes:
+        x (int): The width of the output image.
+        y (int): The height of the output image.
+        img (np.array): The image data (black and white).
+    """
     def __init__(self, x, y, img):
         # convert chunked values to braille text
+        """
+        Initialize size and image data.
+
+        Args:
+            x (int): The width of the output image.
+            y (int): The height of the output image.
+
+            img(np.array): The image data (black and white).
+
+        The values are organized as follows:\n
+        ``... 1 2 ...``\n
+        ``... 3 4 ...``\n
+        ``... 5 6 ...``\n
+        ``... 7 8 ...``\n
+        """
         self.values = {         
             "BLANK"       : [[False, False, False, False, False, False, False, False], '⣿'],
             "8"           : [[False, False, False, False, False, False, False, True], '⡿'],
@@ -293,30 +329,59 @@ class DotBlock:
             "12345678"    : [[True, True, True, True, True, True, True, True], ' ']
         }
 
-        # set cols, rows
+        # set cols, rows, image
+        if isinstance(x, float):
+            x = int(x)
+        if not isinstance(x, int):
+            die("[!] Width must be an int")
+        if isinstance(y, float):
+            y = int(y)
+        if not isinstance(y, int):
+            die("[!] Height must be an int")
+        if not isinstance(img, np.ndarray):
+            die("[!] Image was not converted properly")
+
         self.X = x
         self.Y = y
         self.I = img
     
     def convert(self, filename, debug=False):
+        """
+        Convert image data to Braille symbols and save to .txt file.
+
+        Args:
+            filename(str): The output file to write to.
+
+            debug(boolean, optional): Prints output to console. Defaults to False.
+
+        """
         k = 0
         filename = "../out/" + filename
+
+        if filename[-4:] != ".txt":
+            filename += ".txt"
+
         with open(filename, 'w') as f:
             print("[*] Writing to {}...\n".format(filename))
+
             show_progress = True
             done = False
+
             # chunk the image
             for i in range(0, self.Y // 4): # rows of braille unicode
                 for j in range(0, self.X // 2, 2): # cols of braille unicode
-                    if show_progress:
+                    # update progress
+                    if show_progress and not debug:
                         show_progress = True if update_progress(((i*4 + 4) / self.Y)) == 0 else False
                     else:
-                        if not done:
+                        if not done and not debug:
                             block = int(round(10*1))
                             status = "SUCCESS!     \r\n"
                             text = "\rWorking: [{0}] {1}% {2}".format("#"*block + "-"*(10-block), 1*100, status)
+
                             sys.stdout.write(text)
                             sys.stdout.flush()
+
                             done = True
                     '''
                     The file is analyzed in chunks: ... x x ...
@@ -325,6 +390,8 @@ class DotBlock:
                                                     ... x x ...
                     '''
                     k += 1
+
+                    # chunk section
                     chunk = [
                         self.I[i * 4][j * 2],       self.I[i * 4][j * 2 + 1],
                         self.I[i * 4 + 1][j * 2], self.I[i * 4 + 1][j * 2 + 1],
@@ -332,6 +399,7 @@ class DotBlock:
                         self.I[i * 4 + 3][j * 2], self.I[i * 4 + 3][j * 2 + 1],            
                     ]
 
+                    # look for matching pattern
                     for pattern in self.values:               
                         if np.array_equal(chunk, self.values[pattern][0]):
                             if debug:

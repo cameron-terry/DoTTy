@@ -1,30 +1,41 @@
 # About
-![Dotty output screenshot](/img/dotty_ss.png)
+![Dotty output screenshot](/img/ss/dotty_ss.png)
 
-Dotty takes `.JPEG` files and outputs a text file with the image transformed into a grid of Braille symbols.
+Dotty takes image files and outputs a text file with the image transformed into a grid of Braille symbols.
 
-Dotty scans the `.JPEG` in 4x2 chunks, creating a Braille symbol for each chunk.
+Dotty scans the image in 4x2 chunks, creating a Braille symbol for each chunk.
+The output is stored in the `out/` directory.
 
 ### How to Use
 `$ python dotty.py <path_to_image> [output_file] [sizeX,sizeY] [args]`
 
-| arg  | command                        |
-|------|--------------------------------|
-| `-d` | debug (send output to console) |
-| `-l` | leave size unchanged           |
+#### Args
+| arg  | command                                    |
+|------|--------------------------------------------|
+| `-d` | debug (send output to console)             |
+| `-l` | leave size unchanged (as close as possible |
+| `-n` | no invert (inverts image by default)       |
 
+#### Command-line usage
 The path to the image should *always* be after `dotty.py`.
 The output file and size change should come after (in that order, respectively), if specified.
 Finally, any flags should be specified at the end.
 
-`-d` and `-l` can be chained together in either order.
+Flags can be chained together in any order.
 
-### Example uses
-* Create a `240x240` text file of `pepe.jpg` and output to `../out/output.txt` as well as the console:
-    `$ python dotty.py ../img/pepe.jpg -d`
+Specifying the output file is a text file is not necessary.
 
-* create a full-sized (as close as possible to original) text file of `pepe.jpg` and output to `../out/pepe_braille.txt`:
-    `$ python dotty.py ../img/pepe.jpg ../out/pepe_braille.txt -l`
+#### Example uses
+* Create a `240x240`-sized (60 rows, 60 columns) text file of `pepe.jpg` and output to `../out/output.txt` as well as the console:
+    > `$ python dotty.py ../img/examples/pepe.jpg -d`
 
-* create a `120x60` text file of `bell.jpg` and output to `../out/output.txt`
-    `$ python dotty.py ../img/bell.jpg 120,60`
+* Create a full-sized (as close as possible to original) text file of `pepe.jpg` and output to `../out/pepe_braille.txt`:
+    > `$ python dotty.py ../img/examples/pepe.jpg pepe_braille.txt -l`
+
+* Create a `120x60`-sized (15 rows, 30 columns) text file of `bell.jpg` and output to `../out/output.txt`:
+    > `$ python dotty.py ../img/examples/bell.jpg 120,60`
+
+# Sample Runs
+![Marilyn Monroe](/img/ss/dotty_ss3.png)
+![Starry Night -- Vincent Van Gogh](/img/ss/dotty_ss2.png)
+![Manhattan](/img/ss/dotty_ss4.png)
