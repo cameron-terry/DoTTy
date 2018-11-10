@@ -12,6 +12,7 @@ Requirements
 ------------
 + Python 3
 + Numpy 
++ Pillow
 
 Usage
 -----
