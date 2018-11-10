@@ -51,6 +51,9 @@ Specifying the output file is a text file is not necessary.
 
 Sample Runs
 ===========
+Chevy '57 (1000 × 750)
+----------------------
+![Chevy '57](/img/ss/dotty_ss5.png)
 
 Marilyn Monroe (1200 × 1200)
 ----------------------------
@@ -68,9 +71,12 @@ Manhattan (1242 × 810)
 ----------------------
 ![Manhattan](/img/ss/dotty_ss4.png)
 
-Chevy '57 (1000 × 750)
-----------------------
-![Chevy '57](/img/ss/dotty_ss5.png)
+Golden Gate Bridge (1800 x 1350)
+![Golden Gate Bridge](/img/ss/dotty_ss8.png)
+
+Sun Sets Sail -- Rob Gonsalves (1600 x 788)
+-------------------------------------------
+![Sun Sets Sail -- Rob Gonsalves](/img/ss/dotty_ss9.png)
 
 Mount Everest (2004 × 1800)
 ---------------------------
