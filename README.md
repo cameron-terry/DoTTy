@@ -13,6 +13,9 @@ Requirements
 + Python 3
 + Numpy 
 
+Usage
+-----
+
 ### How to Use
 `$ python dotty.py <path_to_image> [output_file] [sizeX,sizeY] [args]`
 
