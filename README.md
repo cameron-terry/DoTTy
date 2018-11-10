@@ -11,8 +11,8 @@ The output is stored in the `out/` directory.
 Requirements
 ------------
 + Python 3
-+ Numpy 
-+ Pillow
++ Numpy -- https://scipy.org/install.html
++ Pillow -- https://pillow.readthedocs.io/en/3.0.x/installation.html
 
 Usage
 -----
@@ -52,7 +52,7 @@ Specifying the output file is a text file is not necessary.
 Sample Runs
 ===========
 
-Marilyn Monroe (1200 × 1200)
+Marilyn Monroe (1200 × 1200)
 ----------------------------
 ![Marilyn Monroe](/img/ss/dotty_ss3.png)
 
@@ -64,14 +64,14 @@ The Great Wave off Kanagawa -- Hokusai (2000 × 1345)
 ----------------------------------------------------
 ![The Great Wave off Kanagawa -- Hokusai](/img/ss/dotty_ss6.png)
 
-Manhattan (1242 × 810)
+Manhattan (1242 × 810)
 ----------------------
 ![Manhattan](/img/ss/dotty_ss4.png)
 
-Chevy '57 (1000 × 750)
+Chevy '57 (1000 × 750)
 ----------------------
 ![Chevy '57](/img/ss/dotty_ss5.png)
 
-Mount Everest (2004 × 1800)
+Mount Everest (2004 × 1800)
 ---------------------------
 ![Mount Everest](/img/ss/dotty_ss7.png)
