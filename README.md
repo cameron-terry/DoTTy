@@ -36,11 +36,11 @@ Flags can be chained together in any order.
 Specifying the output file is a text file is not necessary.
 
 #### Example uses
-* Create a `240x240`-sized (60 rows, 60 columns) text file of `pepe.jpg` and output to `../out/output.txt` as well as the console:
-    > `$ python dotty.py ../img/examples/pepe.jpg -d`
+* Create a `240x240`-sized (60 rows, 60 columns) text file of `foo.jpg` and output to `../out/output.txt` as well as the console:
+    > `$ python dotty.py ../img/examples/foo.jpg -d`
 
-* Create a full-sized (as close as possible to original) text file of `marilyn_monroe.jpg` and output to `../out/marilyn.txt`:
-    > `$ python dotty.py ../img/examples/marilyn_monroe.jpg marilyn.txt -l`
+* Create a full-sized (as close as possible to original) text file of `lightbulb.jpg` and output to `../out/bulb.txt`:
+    > `$ python dotty.py ../img/examples/lightbulb.jpg bulb.txt -l`
 
 * Create a `120x60`-sized (15 rows, 30 columns) text file of `bell.jpg` and output to `../out/output.txt`:
     > `$ python dotty.py ../img/examples/bell.jpg 120,60`
@@ -48,8 +48,29 @@ Specifying the output file is a text file is not necessary.
 * Create a full-sized text file of `chevy57.jpeg` without invert and output to `../out/chevy57.txt`:
     > `$ python dotty.py ../img/examples/chevy57.jpeg chevy57 -ln`
 
-# Sample Runs
+Sample Runs
+===========
+
+Marilyn Monroe (1200 × 1200)
+----------------------------
 ![Marilyn Monroe](/img/ss/dotty_ss3.png)
+
+Starry Night -- Vincent Van Gogh (1280 x 1014)
+----------------------------------------------
 ![Starry Night -- Vincent Van Gogh](/img/ss/dotty_ss2.png)
+
+The Great Wave off Kanagawa -- Hokusai (2000 × 1345)
+----------------------------------------------------
+![The Great Wave off Kanagawa -- Hokusai](/img/ss/dotty_ss6.png)
+
+Manhattan (1242 × 810)
+----------------------
 ![Manhattan](/img/ss/dotty_ss4.png)
+
+Chevy '57 (1000 × 750)
+----------------------
 ![Chevy '57](/img/ss/dotty_ss5.png)
+
+Mount Everest (2004 × 1800)
+---------------------------
+![Mount Everest](/img/ss/dotty_ss7.png)
