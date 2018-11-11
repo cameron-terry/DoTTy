@@ -38,16 +38,24 @@ Specifying the output file is a text file is not necessary.
 
 #### Example uses
 * Create a `240x240`-sized (60 rows, 60 columns) text file of `foo.jpg` and output to `../out/output.txt` as well as the console:
-    > `$ python dotty.py ../img/user_images/foo.jpg -d`
+    ```sh
+    $ python dotty.py ../img/user_images/foo.jpg -d
+    ```
 
 * Create a full-sized (as close as possible to original) text file of `lightbulb.jpg` and output to `../out/bulb.txt`:
-    > `$ python dotty.py ../img/examples/lightbulb.jpg bulb.txt -l`
+    ```sh 
+    $ python dotty.py ../img/examples/lightbulb.jpg bulb.txt -l
+    ```
 
 * Create a `120x60`-sized (15 rows, 30 columns) text file of `bell.jpg` and output to `../out/output.txt`:
-    > `$ python dotty.py ../img/examples/bell.jpg 120,60`
+    ```sh
+    $ python dotty.py ../img/examples/bell.jpg 120,60
+    ```
 
 * Create a full-sized text file of `foo.jpeg` without invert and output to `../out/bar.txt`:
-    > `$ python dotty.py ../img/user_images/foo.jpeg bar -ln`
+    ```sh
+    $ python dotty.py ../img/user_images/foo.jpeg bar -ln
+    ```
 
 Sample Runs
 ===========
