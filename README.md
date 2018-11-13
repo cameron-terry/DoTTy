@@ -34,6 +34,8 @@ Finally, any flags should be specified at the end.
 
 Flags can be chained together in any order.
 
+If `sizeX,sizeY` and `-l` are used, `-l` takes precedence.
+
 Specifying the output file is a text file is not necessary.
 
 #### Example uses
