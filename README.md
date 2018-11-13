@@ -54,9 +54,9 @@ Specifying the output file is a text file is not necessary.
     $ python dotty.py ../img/examples/bell.jpg 120,60
     ```
 
-* Create a full-sized text file of `foo.jpeg` without invert and output to `../out/bar.txt`:
+* Create a full-sized text file of `kingfisher.jpg` without invert and output to `../out/kingfisher.txt`:
     ```sh
-    $ python dotty.py ../img/user_images/foo.jpeg bar -ln
+    $ python dotty.py ../img/user_images/kingfisher.jpg kingfisher -ln
     ```
 
 Sample Runs
