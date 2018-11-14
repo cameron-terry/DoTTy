@@ -349,12 +349,23 @@ class DotBlock:
         converted = []
         # look for matching pattern
         for chunk in chunks:
-            for pattern in self.values:               
-                if np.array_equal(chunk, self.values[pattern][0]):
-                    if debug:
-                        print(self.values[pattern][1], end="")
-                    
-                    converted.append(self.values[pattern][1])
+            chunk_true = 0
+            for value in chunk:
+                chunk_true = chunk_true + 1 if value else chunk_true
+
+            if chunk_true == 0: # blank
+                converted.append(self.values["BLANK"][1])
+            else:
+                for pattern in self.values:   
+                    chunk_true = 0
+                    for value in chunk:
+                        chunk_true = chunk_true + 1 if value else chunk_true 
+                                 
+                    if chunk_true == len(pattern) and np.array_equal(chunk, self.values[pattern][0]):
+                        if debug:
+                            print(self.values[pattern][1], end="")
+                        
+                        converted.append(self.values[pattern][1])
         
         return converted
     

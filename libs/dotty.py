@@ -41,7 +41,11 @@ try:
 
                 ic = ImageConv(sys.argv[1], filename=sys.argv[2], size=( int(sys.argv[3].split(",")[0]), 
                                                                         int(sys.argv[3].split(",")[1]) ), 
-                                                                        leave_size=leave_size, debug=debug, invert=invert)
+                                                                     leave_size=leave_size, debug=debug, invert=invert)
+            except ValueError:
+                ic = ImageConv(sys.argv[1], filename=sys.argv[3], size=( int(sys.argv[2].split(",")[0]), 
+                                                                        int(sys.argv[2].split(",")[1]) ), 
+                                                                     leave_size=leave_size, debug=debug, invert=invert)
             except IOError:
                 die("[!] Operation failed!\n[!] File could not be written.\
                     \n[*] The file may have been created, and may contain partial data.")
