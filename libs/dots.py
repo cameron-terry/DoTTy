@@ -39,7 +39,7 @@ def update_progress(progress, message, bar_length=10):
         return 1
 
     block = int(round(bar_length*progress))
-    text = "\r{0} [{1}] {2}% {3}".format( message, "#"*block + "-"*(bar_length-block), round(progress*100, 2), status )
+    text = "\r{0} {1}] {2}% {3}".format( message," "*(len("[*] Creating chunks...") - len(message)) + "[" + "#"*block + "-"*(bar_length-block), round(progress*100, 2), status )
 
     sys.stdout.write(text)
     sys.stdout.flush()
@@ -357,6 +357,8 @@ class DotBlock:
 
             if chunk_true == 0: # blank
                 converted.append(self.values["BLANK"][1])
+            elif chunk_true == 8:
+                converted.append(self.values["12345678"][1])
             else:
                 for pattern in self.values:   
                     if chunk_true == len(pattern) and np.array_equal(chunk, self.values[pattern][0]): # check for length before equality
@@ -418,7 +420,7 @@ class DotBlock:
                     if not done and not debug:
                         block = int(round(10*1))
                         status = "SUCCESS!     \r\n"
-                        text = "\r{0} [{1}] {2}% {3}".format(message,"#"*block + "-"*(10-block), 1*100, status)
+                        text = "\r{0} {1}] {2}% {3}".format(message," "*(len("[*] Creating chunks...") - len(message)) + "[" + "#"*block + "-"*(10-block), 1*100, status)
 
                         sys.stdout.write(text)
                         sys.stdout.flush()
@@ -446,10 +448,10 @@ class DotBlock:
                     show_progress = True if update_progress(current_progress, message) == 0 else False
                 else:
                     done = True if not done and not debug else False
-            
+
             block = 10
             status = "SUCCESS!     \r\n"
-            text = "\r{0} [{1}] {2}% {3}".format(message,"#"*block + "-"*(10-block), 100, status)
+            text = "\r{0} {1}] {2}% {3}".format(message," "*(len("[*] Creating chunks...") - len(message)) + "[" + "#"*block + "-"*(10-block), 100, status)
 
             sys.stdout.write(text)
             sys.stdout.flush()
@@ -475,7 +477,7 @@ class DotBlock:
             
             block = 10
             status = "SUCCESS!     \r\n"
-            text = "\r{0} [{1}] {2}% {3}".format(message,"#"*block + "-"*(10-block), 100, status)
+            text = "\r{0} {1}] {2}% {3}".format(message," "*(len("[*] Creating chunks...") - len(message)) + "[" + "#"*block + "-"*(10-block), 100, status)
 
             sys.stdout.write(text)
             sys.stdout.flush()
@@ -498,7 +500,7 @@ class DotBlock:
             
             block = 10
             status = "SUCCESS!     \r\n"
-            text = "\r{0} [{1}] {2}% {3}".format(message,"#"*block + "-"*(10-block), 100, status)
+            text = "\r{0} {1}] {2}% {3}".format(message," "*(len("[*] Creating chunks...") - len(message)) + "[" + "#"*block + "-"*(10-block), 100, status)
 
             sys.stdout.write(text)
             sys.stdout.flush()                          
