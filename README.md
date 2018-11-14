@@ -8,6 +8,9 @@ Dotty takes image files and outputs a text file with the image transformed into 
 Dotty scans the image in 4x2 chunks, creating a Braille symbol for each chunk.
 The output is stored in the `out/` directory.
 
+Changing `RESOLUTION_FACTOR` within `dots.py` will change the final size of the picture. 
+*1, 2* are good values with default being 2.
+
 Requirements
 ------------
 + Python 3
