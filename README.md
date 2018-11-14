@@ -8,9 +8,6 @@ Dotty takes image files and outputs a text file with the image transformed into 
 Dotty scans the image in 4x2 chunks, creating a Braille symbol for each chunk.
 The output is stored in the `out/` directory.
 
-Changing `RESOLUTION_FACTOR` within `dots.py` will change the final size of the picture. 
-*1, 2* are good values with default being 2.
-
 Requirements
 ------------
 + Python 3
@@ -21,20 +18,22 @@ Usage
 -----
 
 ### How to Use
-`$ python dotty.py <path_to_image> [output_file] [sizeX,sizeY] [args]`
+`$ python dotty.py <path_to_image> [output_file] [sizeX,sizeY] [-[args][res]]`
 
 #### Args
 | arg  | command                                     |
 |------|---------------------------------------------|
-| `-d` | debug (send output to console)              |
-| `-l` | leave size unchanged (as close as possible) |
-| `-n` | no invert (inverts image by default)        |
-| `-s` | chunks image 1 at a time (old behavior)     |
+| `d` | debug (send output to console)              |
+| `l` | leave size unchanged (as close as possible) |
+| `n` | no invert (inverts image by default)        |
+| `s` | chunks image 1 at a time (old behavior)     |
+| `1` | sets resolution to 1:1                      |
+| `2` | sets resolution to transpose (default)      |
 
 #### Command-line usage
 The path to the image should *always* be after `dotty.py`.
 The output file and size change should come after (in that order, respectively), if specified.
-Finally, any flags should be specified at the end.
+Finally, any flags should be specified at the end, with resolution after.
 
 Flags can be chained together in any order.
 
@@ -42,9 +41,9 @@ If `sizeX,sizeY` and `-l` are used, `-l` takes precedence.
 
 Specifying the output file is a text file is not necessary.
 
-If there are problems with the image resolution, try using `-s`.
+If there are problems with the image resolution after trying `-1` and `-2`, try using `-s`.
 Although Dotty has been optimized, there may be resolution issues when compared to the old version.
-`-s` runs the program in its original form.
+`-s` runs the original code.
 
 #### Example uses
 * Create a `240x240`-sized (60 rows, 60 columns) text file of `foo.jpg` and output to `../out/output.txt` as well as the console:
