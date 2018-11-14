@@ -26,6 +26,7 @@ Usage
 | `-d` | debug (send output to console)              |
 | `-l` | leave size unchanged (as close as possible) |
 | `-n` | no invert (inverts image by default)        |
+| `-s` | chunks image 1 at a time (old behavior)     |
 
 #### Command-line usage
 The path to the image should *always* be after `dotty.py`.
@@ -37,6 +38,10 @@ Flags can be chained together in any order.
 If `sizeX,sizeY` and `-l` are used, `-l` takes precedence.
 
 Specifying the output file is a text file is not necessary.
+
+If there are problems with the image resolution, try using `-s`.
+Although Dotty has been optimized there may be resolution issues when compared to the old version.
+`-s` runs the program in its original form.
 
 #### Example uses
 * Create a `240x240`-sized (60 rows, 60 columns) text file of `foo.jpg` and output to `../out/output.txt` as well as the console:
