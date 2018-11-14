@@ -43,7 +43,7 @@ If `sizeX,sizeY` and `-l` are used, `-l` takes precedence.
 Specifying the output file is a text file is not necessary.
 
 If there are problems with the image resolution, try using `-s`.
-Although Dotty has been optimized there may be resolution issues when compared to the old version.
+Although Dotty has been optimized, there may be resolution issues when compared to the old version.
 `-s` runs the program in its original form.
 
 #### Example uses
