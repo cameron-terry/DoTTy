@@ -4,6 +4,7 @@ Change Log (v0.2)
 convert()
 =========
 * old code looked up every symbol, 1 at a time (`O(n)` lookup, `O(n^2)` image resolution = `O(n^3)`!)
+   * not sure if `np.array_equal()` short-circuits
 * new code creates `size.X / 4` chunks and fills them simultaneously
 * separated operations into different sections
     * chunk creation: `O(n)`
@@ -19,7 +20,7 @@ convert_chunk()
 ===============
 * added `chunk_true` to quickly identify all `black/white` chunks
     * `chunk_true` tells how many pixels are white in a chunk 
-        * 0 = `black`, 8 = `white` (unique combinations)   
+        * 0 = `black`, 8 = `white` (unique combinations) -- can be resolved in `O(1)` time
 * added short circuit to searching through `self.values` via `chunk_true`
     * only check values that match the number of white pixels
     * distribution of values:
@@ -87,7 +88,7 @@ convert_chunk()
             time: 83.920389
         ```
         ![Kingfisher comparison](/img/ss/dotty_nvs.png)
-        Assuming `t=3.8s, t^2=14.44s, t^3=54.87s`: slow time roughly follows `3t^3 / 2`.
+        Running without slow mode resulted in an `83%` running-time decrease without significant loss of quality. Assuming `t=3.8s, t^2=14.44s, t^3=54.87s`: slow time roughly follows `3t^3 / 2`.
         ```sh
             $ python dotty.py ../img/user_images/manhattan.jpg m2 -ln
             ...
@@ -101,12 +102,13 @@ convert_chunk()
         Assuming `t=4.44s:` 
         * `3t^3 / 2 = 131.292s` which is under the actual time by `5.05%`.
         ![Manhattan comparison -- resolution set to 2](/img/ss/dotty_nvs2.png)
-        Change `self.RESOLUTION_FACTOR` to `1`, and re-run:
+        To improve the definition, change `self.RESOLUTION_FACTOR` to `1`, and re-run:
         ```sh
             $ python dotty.py ../img/user_images/manhattan.jpg m2 -lns
             ...
             time: 39.194958 (roughly double)
         ```
+        Running without slowmode and increasing the definition resulted in a `71.6%` running-time decrease.
         
            | white pixels | percentage |
            |--------------|------------|
@@ -120,5 +122,5 @@ convert_chunk()
            |       7      | 0.0588     |
            |       8      | 0.0088     |
         
-        Note the distribution is roughly the same.
+         Note the distribution is roughly the same.
         ![Manhattan comparison -- resolution set to 1](/img/ss/dotty_nvs3.png)
