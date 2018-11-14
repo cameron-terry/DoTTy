@@ -11,6 +11,7 @@ def update_progress(progress, message, bar_length=10):
 
     Args:
         progress (float): The current progress as a percentage.
+        message (str): The message to display.
         bar_length (int, optional): The size of the progress bar 
                 (chars, excluding brackets).
     Returns: 
@@ -347,6 +348,8 @@ class DotBlock:
         self.Y = y
         self.I = img
 
+        self.RESOLUTION_FACTOR = 2  # change this to affect how the picture is scaled
+
     def convert_chunk(self, chunks, debug):
         converted = []
         # look for matching pattern
@@ -404,7 +407,7 @@ class DotBlock:
                 
                 # chunk section
                 chunk = [
-                    self.I[_ * 4][0],       self.I[_ * 4][1],
+                    self.I[_ * 4][0],     self.I[_ * 4][1],
                     self.I[_ * 4 + 1][0], self.I[_ * 4 + 1][1],
                     self.I[_ * 4 + 2][0], self.I[_ * 4 + 2][1],
                     self.I[_ * 4 + 3][0], self.I[_ * 4 + 3][1],            
@@ -431,11 +434,11 @@ class DotBlock:
             done = False
            
             message = "[*] Initializing..."
-            for j in range(1, self.X // 2): # cols of braille unicode
+            for j in range(0, self.X // 2, self.RESOLUTION_FACTOR): # cols of braille unicode
                 # chunk section
                 for _ in range(len(chunks)):
                     chunks[_].append([
-                        self.I[(_ * 4)][0 + (2 * j)], self.I[(_ * 4)][1 + (2 * j)],
+                        self.I[(_ * 4)][0 + (2 * j)],     self.I[(_ * 4)][1 + (2 * j)],
                         self.I[(_ * 4 + 1)][0 + (2 * j)], self.I[(_ * 4 + 1)][1 + (2 * j)],
                         self.I[(_ * 4 + 2)][0 + (2 * j)], self.I[(_ * 4 + 2)][1 + (2 * j)],
                         self.I[(_ * 4 + 3)][0 + (2 * j)], self.I[(_ * 4 + 3)][1 + (2 * j)],            
