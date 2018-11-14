@@ -56,7 +56,7 @@ class DotBlock:
         y (int): The height of the output image.
         img (np.array): The image data (black and white).
     """
-    def __init__(self, x, y, img):
+    def __init__(self, x, y, img, res_mode=2):
         # convert chunked values to braille text
         """
         Initialize size and image data.
@@ -348,7 +348,7 @@ class DotBlock:
         self.Y = y
         self.I = img
 
-        self.RESOLUTION_FACTOR = 2  # change this to affect how the picture is scaled
+        self.RESOLUTION_FACTOR = res_mode  # change this to affect how the picture is scaled
 
         self.stats = [0, 0, 0, 0, 0, 0, 0, 0, 0] # used for statistics
 

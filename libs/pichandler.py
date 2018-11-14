@@ -15,7 +15,7 @@ class ImageConv:
         x (int): width
         y (int): height
     """
-    def __init__(self, pic, filename="output.txt", size=(240, 240), leave_size=False, debug=False, invert=True, slow_mode=False):
+    def __init__(self, pic, filename="output.txt", size=(240, 240), leave_size=False, debug=False, invert=True, slow_mode=False, res_mode=2):
         """
         Initializes a `numpy` array for conversion using `DotBlock.convert()`.
 
@@ -41,6 +41,8 @@ class ImageConv:
 
             slow_mode (boolean, optional): Convert using 1 chunk
                 Defaults to False.
+
+            res_mode (int, optional): set `DotBlock.RESOLUTION_FACTOR` to original or transpose
         """
         if not isinstance(filename, str):
             die("[!] Bad filename given.")
@@ -71,7 +73,7 @@ class ImageConv:
         I = np.asarray(PIL.ImageOps.invert(img).convert('1').resize((self.X, self.Y), Image.ANTIALIAS)) \
             if invert else np.asarray(img.convert('1').resize((self.X, self.Y), Image.ANTIALIAS))
 
-        db = DotBlock(self.X, self.Y, I)
+        db = DotBlock(self.X, self.Y, I, res_mode=res_mode)
 
         start_time = time.clock()
         db.convert(filename, debug=debug, slow_mode=slow_mode)
