@@ -1,6 +1,7 @@
 from PIL import Image
 import PIL.ImageOps    
 
+import time
 import numpy as np
 
 from dots import DotBlock
@@ -72,7 +73,12 @@ class ImageConv:
 
         db = DotBlock(self.X, self.Y, I)
 
+        start_time = time.clock()
         db.convert(filename, debug=debug, slow_mode=slow_mode)
+        end_time = time.clock() - start_time
+
+        if debug:
+            print("time: " + str(end_time))
 
 if __name__ == '__main__':
     ic = ImageConv('../img/pepe.jpg', leave_size=True)

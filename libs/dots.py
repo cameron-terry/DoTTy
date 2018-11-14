@@ -350,6 +350,8 @@ class DotBlock:
 
         self.RESOLUTION_FACTOR = 2  # change this to affect how the picture is scaled
 
+        self.stats = [0, 0, 0, 0, 0, 0, 0, 0, 0] # used for statistics
+
     def convert_chunk(self, chunks, debug):
         """
         Converts chunks to Braille symbols.
@@ -367,6 +369,8 @@ class DotBlock:
             chunk_true = 0
             for value in chunk:
                 chunk_true = chunk_true + 1 if value else chunk_true
+
+            self.stats[chunk_true] += 1
 
             if chunk_true == 0: # blank
                 converted.append(self.values["BLANK"][1])
@@ -522,6 +526,11 @@ class DotBlock:
                 sys.stdout.flush()                          
 
             print("\n[+] Output sent to {}.".format(filename))
+
+            if debug:
+                print("Statistics: ")
+                for i in range(len(self.stats)):
+                    print(str(i) + ": " + str(self.stats[i] / sum(self.stats)))
         else:
             print("\n[*] Slow mode enabled, now chunking 1 at a time.")
             with open(filename, 'w') as f:
