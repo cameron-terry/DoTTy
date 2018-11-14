@@ -14,7 +14,7 @@ convert()
     * sum of operations: `O(n^2)`
 * added old version as option (slow_mode): `-s`
 * added variable RESOLUTION_FACTOR to change how image is stretched/squished
-    * not reachable by user yet
+   * ~~not reachable by user yet~~
 
 convert_chunk()
 ===============
@@ -104,7 +104,7 @@ convert_chunk()
         ![Manhattan comparison -- resolution set to 2](/img/ss/dotty_nvs2.png)
         To improve the definition, change `self.RESOLUTION_FACTOR` to `1`, and re-run:
         ```sh
-            $ python dotty.py ../img/user_images/manhattan.jpg m2 -lns
+            $ python dotty.py ../img/user_images/manhattan.jpg m2 -ln1
             ...
             time: 39.194958 (roughly double)
         ```
