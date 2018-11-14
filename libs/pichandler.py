@@ -14,7 +14,7 @@ class ImageConv:
         x (int): width
         y (int): height
     """
-    def __init__(self, pic, filename="output.txt", size=(240, 240), leave_size=False, debug=False, invert=True):
+    def __init__(self, pic, filename="output.txt", size=(240, 240), leave_size=False, debug=False, invert=True, slow_mode=False):
         """
         Initializes a `numpy` array for conversion using `DotBlock.convert()`.
 
@@ -37,6 +37,9 @@ class ImageConv:
 
             invert (boolean, optional): Invert the image.
                 Defaults to True.
+
+            slow_mode (boolean, optional): Convert using 1 chunk
+                Defaults to False.
         """
         if not isinstance(filename, str):
             die("[!] Bad filename given.")
@@ -69,7 +72,7 @@ class ImageConv:
 
         db = DotBlock(self.X, self.Y, I)
 
-        db.convert(filename, debug=debug)
+        db.convert(filename, debug=debug, slow_mode=slow_mode)
 
 if __name__ == '__main__':
     ic = ImageConv('../img/pepe.jpg', leave_size=True)

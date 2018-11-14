@@ -7,9 +7,10 @@ try:
     leave_size = False
     debug = False
 
-    flags = ["-d", "-l", "-n", 
-             "-dl", "-ld", "-nd", "-dn", "-nl", "-ln",
-             "-dln", "-dnl", "-ldn", "-lnd", "-ndl", "-nld"]
+    flags = ["-d", "-l", "-n", "s",
+             "-dl", "-ld", "-nd", "-dn", "-nl", "-ln", "-ds", "-ls", "-ns", "-sn", "-sl", "-sd",
+             "-dln", "-dnl", "-dsl", "-dls", "-dsn", "-dns", "-ldn", "-lnd", "-lds", "-lsd", "-lsn", "-lns",
+             "-ndl", "-nld", "-nsl", "-nls", "-nds", "-nsd", "-sdl", "-sld", "-snd", "-sdn", "-sln", "-snl"]
 
     if len(sys.argv) > 5:
         die('''
@@ -17,6 +18,7 @@ try:
         args: -d --> debug (print output to console)
               -l --> leave size (adjusts png minimally)
               -n --> no invert (inverts image colors by default)
+              -s --> slow mode (old method of converting)
             You can combine them as follows: -dl, -ld, -dn, -lnd, etc...
         ''')
     elif len(sys.argv) == 5 and ((sys.argv[1] in flags) or (sys.argv[2] in flags) \
@@ -31,6 +33,7 @@ try:
                 args: -d --> debug (print output to console)
                     -l --> leave size (adjusts png minimally)
                     -n --> no invert (inverts image colors by default)
+                    -s --> slow mode (old method of converting)
                     You can combine them as follows: -dl, -ld, -dn, -lnd, etc...
                 ''')
         else:
@@ -38,14 +41,15 @@ try:
                 leave_size = "l" in sys.argv[4]
                 debug      = "d" in sys.argv[4]
                 invert     = "n" not in sys.argv[4]
+                slow_mode  = "s" in sys.argv[4]
 
                 ic = ImageConv(sys.argv[1], filename=sys.argv[2], size=( int(sys.argv[3].split(",")[0]), 
                                                                         int(sys.argv[3].split(",")[1]) ), 
-                                                                     leave_size=leave_size, debug=debug, invert=invert)
+                                                                     leave_size=leave_size, debug=debug, invert=invert, slow_mode=slow_mode)
             except ValueError:
                 ic = ImageConv(sys.argv[1], filename=sys.argv[3], size=( int(sys.argv[2].split(",")[0]), 
                                                                         int(sys.argv[2].split(",")[1]) ), 
-                                                                     leave_size=leave_size, debug=debug, invert=invert)
+                                                                     leave_size=leave_size, debug=debug, invert=invert, slow_mode=slow_mode)
             except IOError:
                 die("[!] Operation failed!\n[!] File could not be written.\
                     \n[*] The file may have been created, and may contain partial data.")
@@ -65,13 +69,14 @@ try:
                 leave_size = "l" in sys.argv[3]
                 debug      = "d" in sys.argv[3]
                 invert     = "n" not in sys.argv[3]
+                slow_mode  = "s" in sys.argv[3]
 
                 ic = ImageConv( sys.argv[1], size=( int(sys.argv[2].split(",")[0]), 
                                                     int(sys.argv[2].split(",")[1]) ), 
-                                                    leave_size=leave_size, debug=debug, invert=invert)
+                                                    leave_size=leave_size, debug=debug, invert=invert, slow_mode=slow_mode)
             except ValueError:
                 try:
-                    ic = ImageConv(sys.argv[1], filename=sys.argv[2], leave_size=leave_size, debug=debug, invert=invert)
+                    ic = ImageConv(sys.argv[1], filename=sys.argv[2], leave_size=leave_size, debug=debug, invert=invert, slow_mode=slow_mode)
                 except IOError:
                     die("[!] Operation failed!\n[!] File could not be written.\
                     \n[*] The file may have been created, and may contain partial data.")           
@@ -92,8 +97,9 @@ try:
                 leave_size = "l" in sys.argv[2]
                 debug      = "d" in sys.argv[2]
                 invert     = "n" not in sys.argv[2]
+                slow_mode  = "s" in sys.argv[2]
 
-                ic = ImageConv(sys.argv[1], leave_size=leave_size, debug=debug, invert=invert)
+                ic = ImageConv(sys.argv[1], leave_size=leave_size, debug=debug, invert=invert, slow_mode=slow_mode)
             except IOError:
                 die("[!] Operation failed!\n[!] File could not be written.\
                     \n[*] The file may have been created, and may contain partial data.")
@@ -109,7 +115,8 @@ try:
         args: -d --> debug (print output to console)
               -l --> leave size (adjusts png minimally)
               -n --> no invert (inverts image colors by default)
-            You can combine them as follows: -dl, -ld, -dn, -lnd, etc...
+              -s --> slow mode (old method of converting)
+            You can combine them as follows: -dls, -ld, -dn, -lnd, etc...
         ''')
 except KeyboardInterrupt:
     die("\n[!] Process killed by user")

@@ -351,6 +351,16 @@ class DotBlock:
         self.RESOLUTION_FACTOR = 2  # change this to affect how the picture is scaled
 
     def convert_chunk(self, chunks, debug):
+        """
+        Converts chunks to Braille symbols.
+
+        Args:
+            chunks (bool[]): The chunks to decode
+            debug (bool): Print value when found
+
+        Returns:
+            A string representing a row of Braille symbols
+        """
         converted = []
         # look for matching pattern
         for chunk in chunks:
@@ -372,14 +382,16 @@ class DotBlock:
         
         return "".join(converted)
     
-    def convert(self, filename, debug=False):
+    def convert(self, filename, debug=False, slow_mode=False):
         """
         Convert image data to Braille symbols and save to .txt file.
 
         Args:
-            filename(str): The output file to write to.
+            filename (str): The output file to write to.
 
-            debug(boolean, optional): Prints output to console. Defaults to False.
+            debug (boolean, optional): Prints output to console. Defaults to False.
+
+            slow_mode (boolean, optional): Chunks 1 at a time. Defaults to False.
 
         """
         filename = "../out/" + filename
@@ -387,126 +399,177 @@ class DotBlock:
         if filename[-4:] != ".txt":
             filename += ".txt"
 
-        with open(filename, 'w') as f:
-            print("[*] Writing to {}...\n".format(filename))
+        if not slow_mode:
+            with open(filename, 'w') as f:
+                print("[*] Writing to {}...\n".format(filename))
 
-            show_progress = True
-            done = False
+                show_progress = True
+                done = False
 
-            chunks = []
+                chunks = []
 
-            message = "[*] Creating chunks..."
-            # chunk the image
-            for _ in range(self.Y // 4): # rows of braille unicode
-                '''
-                The file is analyzed in chunks: ... x x ...
-                                                ... x x ...
-                                                ... x x ...
-                                                ... x x ...
-                '''
+                message = "[*] Creating chunks..."
+                # chunk the image
+                for _ in range(self.Y // 4): # rows of braille unicode
+                    '''
+                    The file is analyzed in chunks: ... x x ...
+                                                    ... x x ...
+                                                    ... x x ...
+                                                    ... x x ...
+                    '''
+                    
+                    # chunk section
+                    chunk = [
+                        self.I[_ * 4][0],     self.I[_ * 4][1],
+                        self.I[_ * 4 + 1][0], self.I[_ * 4 + 1][1],
+                        self.I[_ * 4 + 2][0], self.I[_ * 4 + 2][1],
+                        self.I[_ * 4 + 3][0], self.I[_ * 4 + 3][1],            
+                    ]
+
+                    chunks.append([chunk])
+
+                    # update progress
+                    current_progress = _ / (self.Y // 4) - 1
+                    if show_progress and not debug:
+                            show_progress = True if update_progress(current_progress, message) == 0 else False
+                    else:
+                        if not done and not debug:
+                            block = int(round(10*1))
+                            status = "SUCCESS!     \r\n"
+                            text = "\r{0} {1}] {2}% {3}".format(message," "*(len("[*] Creating chunks...") - len(message)) + "[" + "#"*block + "-"*(10-block), 1*100, status)
+
+                            sys.stdout.write(text)
+                            sys.stdout.flush()
+
+                            done = True
                 
-                # chunk section
-                chunk = [
-                    self.I[_ * 4][0],     self.I[_ * 4][1],
-                    self.I[_ * 4 + 1][0], self.I[_ * 4 + 1][1],
-                    self.I[_ * 4 + 2][0], self.I[_ * 4 + 2][1],
-                    self.I[_ * 4 + 3][0], self.I[_ * 4 + 3][1],            
-                ]
-
-                chunks.append([chunk])
-
-                # update progress
-                current_progress = _ / (self.Y // 4) - 1
-                if show_progress and not debug:
-                        show_progress = True if update_progress(current_progress, message) == 0 else False
-                else:
-                    if not done and not debug:
-                        block = int(round(10*1))
-                        status = "SUCCESS!     \r\n"
-                        text = "\r{0} {1}] {2}% {3}".format(message," "*(len("[*] Creating chunks...") - len(message)) + "[" + "#"*block + "-"*(10-block), 1*100, status)
-
-                        sys.stdout.write(text)
-                        sys.stdout.flush()
-
-                        done = True
+                show_progress = True
+                done = False
             
-            show_progress = True
-            done = False
-           
-            message = "[*] Initializing..."
-            for j in range(0, self.X // 2, self.RESOLUTION_FACTOR): # cols of braille unicode
-                # chunk section
+                message = "[*] Initializing..."
+                for j in range(0, self.X // 2, self.RESOLUTION_FACTOR): # cols of braille unicode
+                    # chunk section
+                    for _ in range(len(chunks)):
+                        chunks[_].append([
+                            self.I[(_ * 4)][0 + (2 * j)],     self.I[(_ * 4)][1 + (2 * j)],
+                            self.I[(_ * 4 + 1)][0 + (2 * j)], self.I[(_ * 4 + 1)][1 + (2 * j)],
+                            self.I[(_ * 4 + 2)][0 + (2 * j)], self.I[(_ * 4 + 2)][1 + (2 * j)],
+                            self.I[(_ * 4 + 3)][0 + (2 * j)], self.I[(_ * 4 + 3)][1 + (2 * j)],            
+                        ])
+
+                    # update progress
+                    current_progress = j / ((self.X // 2) - 1)
+
+                    if show_progress and not debug:
+                        show_progress = True if update_progress(current_progress, message) == 0 else False
+                    else:
+                        done = True if not done and not debug else False
+
+                block = 10
+                status = "SUCCESS!     \r\n"
+                text = "\r{0} {1}] {2}% {3}".format(message," "*(len("[*] Creating chunks...") - len(message)) + "[" + "#"*block + "-"*(10-block), 100, status)
+
+                sys.stdout.write(text)
+                sys.stdout.flush()
+
+                show_progress = True
+                done = False
+
+                outfile = []
+                message = "[*] Decoding..."
+
+                # chunk the image
+                for c in range(len(chunks)): # rows of braille unicode
+                    row = self.convert_chunk(chunks[c], debug=debug)
+                    outfile.append(row)
+
+                    # update progress
+                    current_progress = c / (len(chunks) - 1)
+
+                    if show_progress and not debug:
+                            show_progress = True if update_progress(current_progress, message) == 0 else False
+                    else:
+                        done = True if not done and not debug else False
+                
+                block = 10
+                status = "SUCCESS!     \r\n"
+                text = "\r{0} {1}] {2}% {3}".format(message," "*(len("[*] Creating chunks...") - len(message)) + "[" + "#"*block + "-"*(10-block), 100, status)
+
+                sys.stdout.write(text)
+                sys.stdout.flush()
+
+                show_progress = True
+                done = False
+
+                message = "[*] Writing to file..."
                 for _ in range(len(chunks)):
-                    chunks[_].append([
-                        self.I[(_ * 4)][0 + (2 * j)],     self.I[(_ * 4)][1 + (2 * j)],
-                        self.I[(_ * 4 + 1)][0 + (2 * j)], self.I[(_ * 4 + 1)][1 + (2 * j)],
-                        self.I[(_ * 4 + 2)][0 + (2 * j)], self.I[(_ * 4 + 2)][1 + (2 * j)],
-                        self.I[(_ * 4 + 3)][0 + (2 * j)], self.I[(_ * 4 + 3)][1 + (2 * j)],            
-                    ])
+                    f.write(outfile[_])
+                    f.write("\n")    
 
-                # update progress
-                current_progress = j / ((self.X // 2) - 1)
+                    # update progress
+                    current_progress = _ / (len(chunks) - 1)
 
-                if show_progress and not debug:
-                    show_progress = True if update_progress(current_progress, message) == 0 else False
-                else:
-                    done = True if not done and not debug else False
-
-            block = 10
-            status = "SUCCESS!     \r\n"
-            text = "\r{0} {1}] {2}% {3}".format(message," "*(len("[*] Creating chunks...") - len(message)) + "[" + "#"*block + "-"*(10-block), 100, status)
-
-            sys.stdout.write(text)
-            sys.stdout.flush()
-
-            show_progress = True
-            done = False
-
-            outfile = []
-            message = "[*] Decoding..."
-
-            # chunk the image
-            for c in range(len(chunks)): # rows of braille unicode
-                row = self.convert_chunk(chunks[c], debug=debug)
-                outfile.append(row)
-
-                # update progress
-                current_progress = c / (len(chunks) - 1)
-
-                if show_progress and not debug:
+                    if show_progress and not debug:
                         show_progress = True if update_progress(current_progress, message) == 0 else False
-                else:
-                    done = True if not done and not debug else False
-            
-            block = 10
-            status = "SUCCESS!     \r\n"
-            text = "\r{0} {1}] {2}% {3}".format(message," "*(len("[*] Creating chunks...") - len(message)) + "[" + "#"*block + "-"*(10-block), 100, status)
+                    else:
+                        done = True if not done and not debug else False
+                
+                block = 10
+                status = "SUCCESS!     \r\n"
+                text = "\r{0} {1}] {2}% {3}".format(message," "*(len("[*] Creating chunks...") - len(message)) + "[" + "#"*block + "-"*(10-block), 100, status)
 
-            sys.stdout.write(text)
-            sys.stdout.flush()
+                sys.stdout.write(text)
+                sys.stdout.flush()                          
 
-            show_progress = True
-            done = False
+            print("\n[+] Output sent to {}.".format(filename))
+        else:
+            print("\n[*] Slow mode enabled, now chunking 1 at a time.")
+            with open(filename, 'w') as f:
+                print("[*] Writing to {}...\n".format(filename))
 
-            message = "[*] Writing to file..."
-            for _ in range(len(chunks)):
-                f.write(outfile[_])
-                f.write("\n")    
+                show_progress = True
+                done = False
 
-                # update progress
-                current_progress = _ / (len(chunks) - 1)
+                message = "[*] Working..."
+                # chunk the image
+                for i in range(0, self.Y // 4): # rows of braille unicode
+                    for j in range(0, self.X // 2, 2): # cols of braille unicode
+                        # update progress
+                        current_progress = (i*4 + 4) / self.Y
+                        if show_progress and not debug:
+                            show_progress = True if update_progress(current_progress, message) == 0 else False
+                        else:
+                            if not done and not debug:
+                                block = int(round(10*1))
+                                status = "SUCCESS!     \r\n"
+                                text = "\r{0} [{1}] {2}% {3}".format(message, "#"*block + "-"*(10-block), 1*100, status)
 
-                if show_progress and not debug:
-                    show_progress = True if update_progress(current_progress, message) == 0 else False
-                else:
-                    done = True if not done and not debug else False
-            
-            block = 10
-            status = "SUCCESS!     \r\n"
-            text = "\r{0} {1}] {2}% {3}".format(message," "*(len("[*] Creating chunks...") - len(message)) + "[" + "#"*block + "-"*(10-block), 100, status)
+                                sys.stdout.write(text)
+                                sys.stdout.flush()
 
-            sys.stdout.write(text)
-            sys.stdout.flush()                          
+                                done = True
+                        
+                        # chunk section
+                        chunk = [
+                            self.I[i * 4][j * 2],     self.I[i * 4][j * 2 + 1],
+                            self.I[i * 4 + 1][j * 2], self.I[i * 4 + 1][j * 2 + 1],
+                            self.I[i * 4 + 2][j * 2], self.I[i * 4 + 2][j * 2 + 1],
+                            self.I[i * 4 + 3][j * 2], self.I[i * 4 + 3][j * 2 + 1],            
+                        ]
 
-        print("\n[+] Output sent to {}.".format(filename))
+                        # look for matching pattern
+                        for pattern in self.values:               
+                            if np.array_equal(chunk, self.values[pattern][0]):
+                                if debug:
+                                    print(self.values[pattern][1], end="")
+                                
+                                f.write(self.values[pattern][1])
+                                
+
+                    if debug:
+                        print("\n")
+                    
+                    f.write("\n")
+
+            print("\n[+] Output sent to {}.".format(filename))
     
