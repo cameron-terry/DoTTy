@@ -1,22 +1,22 @@
 Change Log (v0.2)
 -----------------
 
-convert()
+dots.py:DotBlock.convert()
 =========
 * old code looked up every symbol, 1 at a time (`O(n)` lookup, `O(n^2)` image resolution = `O(n^3)`!)
    * not sure if `np.array_equal()` short-circuits
 * new code creates `size.X / 4` chunks and fills them simultaneously
 * separated operations into different sections
     * chunk creation: `O(n)`
-    * initialization (filling the rest of the columns in): `O(n^2)`
-    * decoding (converting chunk data to Braille symbol): `O(n^2)`
+    * initialization (filling the rest of the chunks in): `O(n^2)`
+    * decoding (converting chunk row data to Braille symbols): `O(n^2)`
     * writing to file: `O(n)`
     * sum of operations: `O(n^2)`
 * added old version as option (slow_mode): `-s`
 * added variable RESOLUTION_FACTOR to change how image is stretched/squished
    * ~~not reachable by user yet~~
 
-convert_chunk()
+dots.py:DotBlock.convert_chunk()
 ===============
 * added `chunk_true` to quickly identify all `black/white` chunks
     * `chunk_true` tells how many pixels are white in a chunk 
