@@ -56,6 +56,7 @@ class DotBlock:
 
         self.stats = [0, 0, 0, 0, 0, 0, 0, 0, 0] # used for statistics
 
+    # O(n)
     def convert_chunk(self, chunks, debug):
         """
         Converts chunks to Braille symbols.
@@ -89,6 +90,7 @@ class DotBlock:
         
         return "".join(converted)
     
+    # O(n)
     def generate_chunks(self, chunks, longest_message, debug, clock=-1):
         """
         Write decoded image to file.
@@ -136,7 +138,8 @@ class DotBlock:
             return out_success(message, longest_message, clock, td)
 
         return -1
-        
+    
+    # O(n^2)
     def initialize_chunks(self, chunks, longest_message, debug, clock=-1):
         """
         Write decoded image to file.
@@ -176,7 +179,8 @@ class DotBlock:
             return out_success(message, longest_message, clock, td)
         
         return -1
-
+    
+    # O(n^2)
     def decode(self, chunks, longest_message, debug, clock=-1):
         """
         Write decoded image to file.
@@ -268,11 +272,15 @@ class DotBlock:
             filename += ".txt"
 
         longest_message = "[*] Creating chunks..."
-        
+        DIVIDER = "="*48
+
         # process is O(n) + O(n^2) + O(n) + O(n) = O(n^2) + O(3n) = O(n^2 + 3n)
         if not slow_mode:                   
             chunks = []
-            print("[*] Writing to {}...\n".format(filename))
+            print("[*] Resolution: [1:{}]".format(self.RESOLUTION_FACTOR))
+            print(DIVIDER)
+            print("[*] Writing to {}...".format(filename))
+            print(DIVIDER)
 
             # start clock for timing
             td = time.clock()
@@ -288,16 +296,15 @@ class DotBlock:
 
             # write to file: O(n)
             self.write_to_file(filename, len(chunks), outfile, longest_message, debug=debug, clock=td)                        
-
-            print("\n[+] Output sent to {}.".format(filename))
            
             if debug:
                 print_stats(self.stats)
-        # -s (estimated runtime-complexity O(n^4 + 2n^2))
+        # -s (estimated runtime-complexity O(8n^3 + n^2))
         else:
             print("\n[*] Slow mode enabled, now chunking 1 at a time.")
             with open(filename, 'w') as f:
-                print("[*] Writing to {}...\n".format(filename))
+                print("[*] Writing to {}...".format(filename))
+                print(DIVIDER)
 
                 show_progress = True
                 done = False
@@ -343,5 +350,6 @@ class DotBlock:
                     
                     f.write("\n")
 
-            print("\n[+] Output sent to {}.".format(filename))
+        print(DIVIDER)
+        print("[+] Output sent to {}.".format(filename))
     
