@@ -276,11 +276,12 @@ class DotBlock:
         if filename[-4:] != ".txt":
             filename += ".txt"
 
-        longest_message = "[*] Creating chunks..."
         DIVIDER = "="*48
 
         # process is O(n) + O(n^2) + O(n) + O(n) = O(n^2) + O(3n) = O(n^2 + 3n)
-        if not slow_mode:                   
+        if not slow_mode:     
+            longest_message = "[*] Creating chunks..."
+
             chunks = []
             print("[*] Resolution: [1:{}]".format(self.RESOLUTION_FACTOR))
             print(DIVIDER)
@@ -315,8 +316,10 @@ class DotBlock:
                 done = False
 
                 message = "[*] Working..."
+                longest_message = message
                 # chunk the image
                 for i in range(0, self.Y // 4): # rows of braille unicode
+                    chunks = []
                     for j in range(0, self.X // 2, 2): # cols of braille unicode
                         # update progress
                         current_progress = (i*4 + 4) / self.Y
@@ -326,7 +329,7 @@ class DotBlock:
                             if not done and not debug:
                                 block = int(round(10))
                                 status = "SUCCESS!     \r\n"
-                                text = "\r{0} [{1}] {2}% {3}".format(message, " "*(len(longest_message) - len(message)) + "[" + "#"*block + "-"*(10-block), 100, status)
+                                text = "\r{0} [{1}] {2}% {3}".format(message, " "*(len(longest_message) - len(message)) + "#"*block + "-"*(10-block), 100, status)
 
                                 sys.stdout.write(text)
                                 sys.stdout.flush()
@@ -341,14 +344,10 @@ class DotBlock:
                             self.I[i * 4 + 3][j * 2], self.I[i * 4 + 3][j * 2 + 1],            
                         ]
 
-                        # look for matching pattern
-                        for pattern in self.values:               
-                            if np.array_equal(chunk, self.values[pattern][0]):
-                                if debug:
-                                    print(self.values[pattern][1], end="")
-                                
-                                f.write(self.values[pattern][1])
-                                
+                        chunks.append(chunk)
+
+                    out = self.convert_chunk(chunks)
+                    f.write(out) 
 
                     if debug:
                         print("\n")
