@@ -22,7 +22,7 @@ Usage
 
 #### Args
 | arg              | command                                              |
-|------------------|------------------------------------------------------|
+|:----------------:|------------------------------------------------------|
 | `d`              | debug (send output to console)                       |
 | `l`              | leave size unchanged (as close as possible)          |
 | `n`              | no invert (inverts image by default)                 |
