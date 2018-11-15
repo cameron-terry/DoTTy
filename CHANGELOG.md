@@ -12,7 +12,7 @@ dots.py:DotBlock.convert()
 * largest deciding factor on running speed is grouping time --> resolution size: `O(n^2)`
 * Should see decreased run times of `> ~95%`
 * Lookup code for slow mode (`O(n^2) -> O(n)`)
-   * Replaced np.array_equal with key lookup; key lookup happens once per row instead of every chunk
+   * Replaced `np.array_equal()` with `key` lookup; `key` lookup happens once per row instead of every chunk
 
 ### Added
 * resolution option (squish image by `<number>`)
@@ -20,11 +20,12 @@ dots.py:DotBlock.convert()
 dots.py:DotBlock.convert_chunk()
 --------------------------------
 ### Changed
-* Lookup time is now `O(1)`
-  * removed `np.array_equal` comparison, instead build key in constant time for lookup
+#### Lookup time 
+  * is now `O(1)`
+  * removed `np.array_equal()` comparison, instead build key in constant time for lookup
   * `lookup` holds the key and is used when `chunk_true` is not 0 ~~or 8~~
     * initialized at the same time as `chunk_true`, in constant time (`sizeof chunk = 8`)
-* Run times:
+#### Run times:
   ```sh
       $ python dotty.py ../img/user_images/kingfisher.jpg m2 -lnd
       ...
@@ -139,7 +140,7 @@ dots.py:DotBlock.convert_chunk()
         * `24.28%` of the chunks only needed to be compared with `3.24%` of possible comparisons
         * `75.89%` of the chunks needed to be compared with `63.6%` of possible comparisons
 
-    * Run times:
+ #### Run times:
         ```sh
             $ python dotty.py ../img/user_images/kingfisher.jpg m2 -lnd
             ...
