@@ -5,6 +5,11 @@ dots.py:DotBlock.convert()
 =========
 * old code looked up every symbol, 1 at a time (`O(n)` lookup, `O(n^2)` image resolution = `O(n^3)`!)
    * not sure if `np.array_equal()` short-circuits
+      > Neither allclose() nor array_equal() actually short-circuits when doing the real check. 
+      > They only short-circuit in the all() function/method call, which is already too late. 
+      > These two functions can be especially deceiving.
+   
+      *congma*, https://github.com/numpy/numpy/issues/6909
 * new code creates `size.X / 4` chunks and fills them simultaneously
 * separated operations into different sections
     * chunk creation: `O(n)`
@@ -21,7 +26,7 @@ dots.py:DotBlock.convert_chunk()
 * added `chunk_true` to quickly identify all `black/white` chunks
     * `chunk_true` tells how many pixels are white in a chunk 
         * 0 = `black`, 8 = `white` (unique combinations) -- can be resolved in `O(1)` time
-* added short circuit to searching through `self.values` via `chunk_true`
+* added short-circuit to searching through `self.values` via `chunk_true`
     * only check values that match the number of white pixels
     * distribution of values:
      
@@ -88,7 +93,7 @@ dots.py:DotBlock.convert_chunk()
             time: 83.920389
         ```
         ![Kingfisher comparison](/img/ss/dotty_nvs.png)
-        Running without slow mode resulted in an `83%` running-time decrease without significant loss of quality. Assuming `t=3.8s, t^2=14.44s, t^3=54.87s`: slow time roughly follows `3t^3 / 2`.
+        Running without slow mode resulted in an `83%` running-time decrease without significant loss of quality (`0.22%` difference in word count, `18.95%` difference in bytes). Assuming `t=3.8s, t^2=14.44s, t^3=54.87s`: slow time roughly follows `3t^3 / 2`.
         ```sh
             $ python dotty.py ../img/user_images/manhattan.jpg m2 -ln
             ...
@@ -108,7 +113,7 @@ dots.py:DotBlock.convert_chunk()
             ...
             time: 39.194958 (roughly double)
         ```
-        Running without slowmode and increasing the definition resulted in a `71.6%` running-time decrease.
+      Running without slowmode and increasing the definition resulted in a `71.6%` running-time decrease, `0.38%` difference in word count, `18.95%` difference in bytes
         
            | white pixels | percentage |
            |--------------|------------|
