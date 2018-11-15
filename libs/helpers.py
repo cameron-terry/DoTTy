@@ -6,6 +6,7 @@ def die(message):
     exit(0)
 
 def print_stats(stats_list):
+    """Print statistics about image."""
     print("[*] Statistics: ")
     for i in range(len(stats_list)):
         print("[*] " + str(i) + " white pixels: " + str(round(stats_list[i] / sum(stats_list), 4)))
@@ -53,8 +54,9 @@ def update_progress(progress, message, bar_length=10):
     return 0
 
 def show_current_progress(current_progress, message, debug):
-        if not debug:
-            return True if update_progress(current_progress, message) == 0 else False
+    """Show current progress"""
+    if not debug:
+        return True if update_progress(current_progress, message) == 0 else False
 
 def out_success(message, longest_message, clock, td):
     """

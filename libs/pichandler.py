@@ -5,7 +5,7 @@ import time
 import numpy as np
 
 from dots import DotBlock
-from helpers import *
+from helpers import die
 
 class ImageConv:
     """
@@ -83,4 +83,4 @@ class ImageConv:
             print("time: " + str(end_time))
 
 if __name__ == '__main__':
-    ic = ImageConv('../img/pepe.jpg', leave_size=True)
+    ic = ImageConv('../img/user_images/kingfisher.jpg', leave_size=True, invert=False, res_mode=1)

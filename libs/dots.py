@@ -57,13 +57,12 @@ class DotBlock:
         self.stats = [0, 0, 0, 0, 0, 0, 0, 0, 0] # used for statistics
 
     # O(n)
-    def convert_chunk(self, chunks, debug):
+    def convert_chunk(self, chunks):
         """
         Converts chunks to Braille symbols.
 
         Args:
             chunks (bool[]): The chunks to decode
-            debug (bool): Print value when found
 
         Returns:
             A string representing a row of Braille symbols
@@ -93,7 +92,7 @@ class DotBlock:
     # O(n)
     def generate_chunks(self, chunks, longest_message, debug, clock=-1):
         """
-        Write decoded image to file.
+        Create `n` chunks to semi-parallelize re-grouping an `np.array`.
 
         Args:
             chunks(int): Re-grouped image data
@@ -107,6 +106,9 @@ class DotBlock:
         Returns:
             td: Clock information
         """
+        if clock != -1:
+            clock = time.clock()
+            
         show_progress = True
 
         message = "[*] Creating chunks..."
@@ -142,7 +144,7 @@ class DotBlock:
     # O(n^2)
     def initialize_chunks(self, chunks, longest_message, debug, clock=-1):
         """
-        Write decoded image to file.
+        Create the rest of the chunks.
 
         Args:
             chunks(int): Re-grouped image data
@@ -156,6 +158,9 @@ class DotBlock:
         Returns:
             td: Clock information
         """
+        if clock != -1:
+            clock = time.clock()
+
         show_progress = True
     
         message = "[*] Initializing..."
@@ -183,7 +188,7 @@ class DotBlock:
     # O(n^2)
     def decode(self, chunks, longest_message, debug, clock=-1):
         """
-        Write decoded image to file.
+        Convert chunks to Braille symbols.
 
         Args:
             chunks(int): Re-grouped image data
@@ -206,7 +211,7 @@ class DotBlock:
 
         # chunk the image
         for c in range(len(chunks)): # rows of braille unicode
-            row = self.convert_chunk(chunks[c], debug=debug)
+            row = self.convert_chunk(chunks[c])
             outfile.append(row)
 
             # update progress
@@ -221,6 +226,8 @@ class DotBlock:
         return -1
 
     def write_to_file(self, filename, chunk_length, outfile, longest_message, debug, clock=-1):
+        if clock != -1:
+            clock = time.clock()
         """
         Write decoded image to file.
 
@@ -266,7 +273,7 @@ class DotBlock:
             slow_mode (boolean, optional): Chunks 1 at a time. Defaults to False.
 
         """
-        filename = "../out/" + filename
+        filename = "../out/" + filename if "../out/" not in filename else filename
 
         if filename[-4:] != ".txt":
             filename += ".txt"
