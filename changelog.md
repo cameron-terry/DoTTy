@@ -1,18 +1,23 @@
 Change Log 
 ==========
 
-(v0.2.1)
-========
+(v0.2.1) -- 2018-11-15
+======================
 dots.py:DotBlock.convert()
 --------------------------
+### Changed
 * decoding (converting chunk row data to Braille symbols) operation is now `O(n)`
   * full DotBlock.convert() process is approximately `2 * O(n^2 + n)`
     * chunk + init + decode + write: `O(n) + O(n^2) + O(n^2) + O(n)` with init (re-grouping of data) depending on two ints
 * largest deciding factor on running speed is grouping time --> resolution size: `O(n^2)`
 * Should see decreased run times of `> ~95%`
 
+### Added
+* resolution option (squish image by `<number>`)
+
 dots.py:DotBlock.convert_chunk()
 --------------------------------
+### Changed
 * Lookup time is now `O(1)`
   * removed `np.array_equal` comparison, instead build key in constant time for lookup
   * `lookup` holds the key and is used when `chunk_true` is not 0 or 8
@@ -44,8 +49,8 @@ dots.py:DotBlock.convert_chunk()
   
 Image quality is unaffected from v0.2.
 
-v(0.2)
-======
+v(0.2) -- 2018-11-14
+====================
 dots.py:DotBlock.convert()
 --------------------------
 * old code looked up every symbol, 1 at a time (`O(n)` lookup, `O(n^2)` image resolution = `O(n^3)`!)
@@ -56,6 +61,8 @@ dots.py:DotBlock.convert()
       > These two functions can be especially deceiving.
    
       *congma*, https://github.com/numpy/numpy/issues/6909
+
+### Changed
 * new code creates `size.X / 4` chunks and fills them simultaneously
 * separated operations into different sections
     * chunk creation: `O(n)`
@@ -63,16 +70,19 @@ dots.py:DotBlock.convert()
     * decoding (converting chunk row data to Braille symbols): `O(n^2)`
     * writing to file: `O(n)`
     * sum of operations: `O(n^2)`
-* added old version as option (slow_mode): `-s`
-* added variable RESOLUTION_FACTOR to change how image is stretched/squished
+
+### Added
+* old version as option (slow_mode): `-s`
+* variable RESOLUTION_FACTOR to change how image is stretched/squished
     * ~~not reachable by user yet~~
 
 dots.py:DotBlock.convert_chunk()
 --------------------------------
-* added `chunk_true` to quickly identify all `black/white` chunks
+### Added
+* variable `chunk_true` to quickly identify all `black/white` chunks
     * `chunk_true` tells how many pixels are white in a chunk 
         * 0 = `black`, 8 = `white` (unique combinations) -- can be resolved in `O(1)` time
-* added short-circuit to searching through `self.values` via `chunk_true`
+* short-circuiting searching through `self.values` via `chunk_true`
     * only check values that match the number of white pixels
     * distribution of values:
      
