@@ -1,8 +1,53 @@
-Change Log (v0.2)
------------------
+Change Log 
+==========
 
+(v0.2.1)
+========
 dots.py:DotBlock.convert()
-=========
+--------------------------
+* decoding (converting chunk row data to Braille symbols) operation is now `O(n)`
+  * full DotBlock.convert() process is approximately `O(n^2 + 3n)`
+    * chunk + init + decode + write: `O(n) + O(n^2) + O(n) + O(n)` with init (re-grouping of data) depending on two ints
+* largest deciding factor on running speed is grouping time --> resolution size: `O(n^2)`
+* Should see decreased run times of `> ~95%`
+
+dots.py:DotBlock.convert_chunk()
+--------------------------------
+* Lookup time is now `O(1)`
+  * removed `np.array_equal` comparison, instead build key in constant time for lookup
+  * `lookup` holds the key and is used when `chunk_true` is not 0 or 8
+    * initialized at the same time as `chunk_true`, in constant time (`sizeof chunk = 8`)
+* Run times:
+  ```sh
+      $ python dotty.py ../img/user_images/kingfisher.jpg m2 -lnd
+      ...
+      time: 0.26288
+  ```
+        
+  ```sh
+      $ python dotty.py ../img/user_images/kingfisher.jpg m2 -lnd1
+      ...
+      time: 0.653989
+  ```
+        
+  ```sh
+      $ python dotty.py ../img/user_images/manhattan.jpg m2 -lnd
+      ...
+      time: 0.504448
+  ```
+        
+  ```sh
+      $ python dotty.py ../img/user_images/manhattan.jpg m2 -lnd1
+      ...
+      time: 0.7596529
+  ```
+  
+Image quality is unaffected from v0.2.
+
+v(0.2)
+======
+dots.py:DotBlock.convert()
+--------------------------
 * old code looked up every symbol, 1 at a time (`O(n)` lookup, `O(n^2)` image resolution = `O(n^3)`!)
    * not sure if `np.array_equal()` short-circuits
       > Neither allclose() nor array_equal() actually short-circuits when doing the real check. 
@@ -22,7 +67,7 @@ dots.py:DotBlock.convert()
    * ~~not reachable by user yet~~
 
 dots.py:DotBlock.convert_chunk()
-===============
+--------------------------------
 * added `chunk_true` to quickly identify all `black/white` chunks
     * `chunk_true` tells how many pixels are white in a chunk 
         * 0 = `black`, 8 = `white` (unique combinations) -- can be resolved in `O(1)` time
@@ -83,24 +128,24 @@ dots.py:DotBlock.convert_chunk()
 
     * Run times:
         ```sh
-            $ python dotty.py ../img/user_images/kingfisher.jpg m2 -ln
+            $ python dotty.py ../img/user_images/kingfisher.jpg m2 -lnd
             ...
             time: 14.260033
         ```
         ```sh
-            $ python dotty.py ../img/user_images/kingfisher.jpg m2 -lns
+            $ python dotty.py ../img/user_images/kingfisher.jpg m2 -lnds
             ...
             time: 83.920389
         ```
         ![Kingfisher comparison](/img/ss/dotty_nvs.png)
         Running without slow mode resulted in an `83%` running-time decrease without significant loss of quality (`0.22%` difference in word count, `18.95%` difference in bytes). Assuming `t=3.8s, t^2=14.44s, t^3=54.87s`: slow time roughly follows `3t^3 / 2`.
         ```sh
-            $ python dotty.py ../img/user_images/manhattan.jpg m2 -ln
+            $ python dotty.py ../img/user_images/manhattan.jpg m2 -lnd
             ...
             time: 19.734783999999998
         ```
         ```sh
-            $ python dotty.py ../img/user_images/manhattan.jpg m2 -lns
+            $ python dotty.py ../img/user_images/manhattan.jpg m2 -lnds
             ...
             time: 138.215585
         ```
@@ -109,7 +154,7 @@ dots.py:DotBlock.convert_chunk()
         ![Manhattan comparison -- resolution set to 2](/img/ss/dotty_nvs2.png)
         To improve the definition, change `self.RESOLUTION_FACTOR` to `1`, and re-run:
         ```sh
-            $ python dotty.py ../img/user_images/manhattan.jpg m2 -ln1
+            $ python dotty.py ../img/user_images/manhattan.jpg m2 -lnd1
             ...
             time: 39.194958 (roughly double)
         ```
