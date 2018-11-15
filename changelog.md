@@ -158,7 +158,7 @@ dots.py:DotBlock.convert_chunk()
             ...
             time: 39.194958 (roughly double)
         ```
-      Running without slowmode and increasing the definition resulted in a `71.6%` running-time decrease, `0.38%` difference in word count, `18.95%` difference in bytes
+      Running without slowmode and increasing the definition resulted in a `71.6%` running-time decrease, `0.38%` difference in word count, `18.47%` difference in bytes
         
            | white pixels | percentage |
            |--------------|------------|
