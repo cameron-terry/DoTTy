@@ -49,7 +49,8 @@ v(0.2)
 dots.py:DotBlock.convert()
 --------------------------
 * old code looked up every symbol, 1 at a time (`O(n)` lookup, `O(n^2)` image resolution = `O(n^3)`!)
-   * not sure if `np.array_equal()` short-circuits
+    * process was approximately `O(8n^3 + n^2)`
+    * not sure if `np.array_equal()` short-circuits
       > Neither allclose() nor array_equal() actually short-circuits when doing the real check. 
       > They only short-circuit in the all() function/method call, which is already too late. 
       > These two functions can be especially deceiving.
@@ -64,7 +65,7 @@ dots.py:DotBlock.convert()
     * sum of operations: `O(n^2)`
 * added old version as option (slow_mode): `-s`
 * added variable RESOLUTION_FACTOR to change how image is stretched/squished
-   * ~~not reachable by user yet~~
+    * ~~not reachable by user yet~~
 
 dots.py:DotBlock.convert_chunk()
 --------------------------------
