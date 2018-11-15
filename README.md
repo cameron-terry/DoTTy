@@ -21,15 +21,15 @@ Usage
 `$ python dotty.py <path_to_image> [output_file] [sizeX,sizeY] [-[args][res]]`
 
 #### Args
-| arg  | command                                     |
-|------|---------------------------------------------|
-| `d` | debug (send output to console)              |
-| `l` | leave size unchanged (as close as possible) |
-| `n` | no invert (inverts image by default)        |
-| `s` | chunks image 1 at a time (old behavior)     |
-| `1` | sets resolution to 1:1                      |
-| `2` | sets resolution to transpose (default)      |
-
+| arg              | command                                              |
+|------------------|------------------------------------------------------|
+| `d`              | debug (send output to console)                       |
+| `l`              | leave size unchanged (as close as possible)          |
+| `n`              | no invert (inverts image by default)                 |
+| `s`              | re-groups image 1 chunk at a time (old behavior)     |
+| `1` (res)        | sets resolution to `1:1`                             |
+| `2` (res)        | sets resolution to `transpose (default)`             |
+| `[number]` (res) | sets resolution to `1:number`                        |
 #### Command-line usage
 The path to the image should *always* be after `dotty.py`.
 The output file and size change should come after (in that order, respectively), if specified.
@@ -43,7 +43,7 @@ Specifying the output file is a text file is not necessary.
 
 If there are problems with the image resolution after trying `-1` and `-2`, try using `-s`.
 Although Dotty has been optimized, there may be resolution issues when compared to the old version.
-`-s` runs the original code.
+`-s` runs the original code **(much slower, however: be warned!)**.
 
 #### Example uses
 * Create a `240x240`-sized (60 rows, 60 columns) text file of `foo.jpg` and output to `../out/output.txt` as well as the console:
