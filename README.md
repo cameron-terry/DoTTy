@@ -49,37 +49,3 @@ Although Dotty has been optimized, there may be resolution issues when compared 
     ```sh
     $ python dotty.py ../img/user_images/kingfisher.jpg kingfisher -ln
     ```
-
-Sample Runs
-===========
-Chevy '57 (1000 × 750)
-----------------------
-![Chevy '57](/img/ss/dotty_ss5.png)
-
-Marilyn Monroe (1200 × 1200)
-----------------------------
-![Marilyn Monroe](/img/ss/dotty_ss3.png)
-
-Starry Night -- Vincent Van Gogh (1280 x 1014)
-----------------------------------------------
-![Starry Night -- Vincent Van Gogh](/img/ss/dotty_ss2.png)
-
-The Great Wave off Kanagawa -- Hokusai (2000 × 1345)
-----------------------------------------------------
-![The Great Wave off Kanagawa -- Hokusai](/img/ss/dotty_ss6.png)
-
-Manhattan (1242 × 810)
-----------------------
-![Manhattan](/img/ss/dotty_ss4.png)
-
-Golden Gate Bridge (1800 x 1350)
---------------------------------
-![Golden Gate Bridge](/img/ss/dotty_ss8.png)
-
-Sun Sets Sail -- Rob Gonsalves (1600 x 788)
--------------------------------------------
-![Sun Sets Sail -- Rob Gonsalves](/img/ss/dotty_ss9.png)
-
-Mount Everest (2004 × 1800)
----------------------------
-![Mount Everest](/img/ss/dotty_ss7.png)
