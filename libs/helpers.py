@@ -6,9 +6,9 @@ def die(message):
     exit(0)
 
 def print_stats(stats_list):
-    print("Statistics: ")
+    print("[*] Statistics: ")
     for i in range(len(stats_list)):
-        print(str(i) + " white pixels: " + str(round(stats_list[i] / sum(stats_list), 4)))
+        print("[*] " + str(i) + " white pixels: " + str(round(stats_list[i] / sum(stats_list), 4)))
 
 def update_progress(progress, message, bar_length=10):
     """
