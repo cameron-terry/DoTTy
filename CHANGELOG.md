@@ -47,7 +47,7 @@ dots.py:DotBlock.convert_chunk()
       time: 0.7596529
   ```
   
-Image quality is unaffected from v0.2.
+Image quality is unaffected from `v0.2.`
 
 v(0.2) -- 2018-11-14
 ====================
