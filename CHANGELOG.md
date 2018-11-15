@@ -7,7 +7,7 @@ dots.py:DotBlock.convert()
 --------------------------
 ### Changed
 * decoding (converting chunk row data to Braille symbols) operation is now `O(n)`
-  * full DotBlock.convert() process is approximately `2 * O(n^2 + n)`
+  * full `DotBlock.convert()` process is approximately `2 * O(n^2 + n)`
     * chunk + init + decode + write: `O(n) + O(n^2) + O(n^2) + O(n)` with init (re-grouping of data) depending on two ints
 * largest deciding factor on running speed is grouping time --> resolution size: `O(n^2)`
 * Should see decreased run times of `> ~95%`
