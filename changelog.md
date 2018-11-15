@@ -6,8 +6,8 @@ Change Log
 dots.py:DotBlock.convert()
 --------------------------
 * decoding (converting chunk row data to Braille symbols) operation is now `O(n)`
-  * full DotBlock.convert() process is approximately `O(n^2 + 3n)`
-    * chunk + init + decode + write: `O(n) + O(n^2) + O(n) + O(n)` with init (re-grouping of data) depending on two ints
+  * full DotBlock.convert() process is approximately `2 * O(n^2 + n)`
+    * chunk + init + decode + write: `O(n) + O(n^2) + O(n^2) + O(n)` with init (re-grouping of data) depending on two ints
 * largest deciding factor on running speed is grouping time --> resolution size: `O(n^2)`
 * Should see decreased run times of `> ~95%`
 
@@ -138,7 +138,7 @@ dots.py:DotBlock.convert_chunk()
             time: 83.920389
         ```
         ![Kingfisher comparison](/img/ss/dotty_nvs.png)
-        Running without slow mode resulted in an `83%` running-time decrease without significant loss of quality (`0.22%` difference in word count, `18.95%` difference in bytes). Assuming `t=3.8s, t^2=14.44s, t^3=54.87s`: slow time roughly follows `3t^3 / 2`.
+        Running without slow mode resulted in an `83%` running-time decrease without significant loss of quality (`0.22%` difference in word count, `18.95%` difference in bytes). Slow time roughly follows `8t^3 + t^2`.
         ```sh
             $ python dotty.py ../img/user_images/manhattan.jpg m2 -lnd
             ...
