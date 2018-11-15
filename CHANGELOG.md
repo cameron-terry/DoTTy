@@ -20,7 +20,7 @@ dots.py:DotBlock.convert_chunk()
 ### Changed
 * Lookup time is now `O(1)`
   * removed `np.array_equal` comparison, instead build key in constant time for lookup
-  * `lookup` holds the key and is used when `chunk_true` is not 0 or 8
+  * `lookup` holds the key and is used when `chunk_true` is not 0 ~~or 8~~
     * initialized at the same time as `chunk_true`, in constant time (`sizeof chunk = 8`)
 * Run times:
   ```sh
@@ -47,7 +47,7 @@ dots.py:DotBlock.convert_chunk()
       time: 0.7596529
   ```
   
-Image quality is unaffected from v0.2.
+Image quality is unaffected from `v0.2.`
 
 v(0.2) -- 2018-11-14
 ====================
