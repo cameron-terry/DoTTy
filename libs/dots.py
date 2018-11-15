@@ -69,24 +69,22 @@ class DotBlock:
         """
         CHUNK_LENGTH = 8 # constant
         converted = []
-        # look for matching pattern
+
         for chunk in chunks:
+            # look for matching pattern
             lookup = ""
             chunk_true = 0
-            # create lookup string -- every number either appears once or none
+
+            # create lookup string, O(8) -- every number either appears once or none 
             for value in range(CHUNK_LENGTH):
                 chunk_true = chunk_true + 1 if chunk[value] else chunk_true
                 lookup += str(value+1) if chunk[value] else ""
 
             self.stats[chunk_true] += 1
 
-            if chunk_true == 0: # blank
-                converted.append(self.values["BLANK"][1])
-            elif chunk_true == 8: # full
-                converted.append(self.values["12345678"][1])
-            else:                            
-                converted.append(self.values[lookup][1])
-        
+            # lookup value to append -- O(1)
+            converted.append(self.values["BLANK"][1]) if chunk_true == 0 else converted.append(self.values[lookup][1])                           
+                
         return "".join(converted)
     
     # O(n)
@@ -108,7 +106,7 @@ class DotBlock:
         """
         if clock != -1:
             clock = time.clock()
-            
+
         show_progress = True
 
         message = "[*] Creating chunks..."
