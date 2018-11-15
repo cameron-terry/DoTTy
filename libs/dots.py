@@ -403,6 +403,8 @@ class DotBlock:
         if filename[-4:] != ".txt":
             filename += ".txt"
 
+        longest_message = "[*] Creating chunks..."
+
         if not slow_mode:
             with open(filename, 'w') as f:
                 print("[*] Writing to {}...\n".format(filename))
@@ -440,7 +442,7 @@ class DotBlock:
                         if not done and not debug:
                             block = int(round(10*1))
                             status = "SUCCESS!     \r\n"
-                            text = "\r{0} {1}] {2}% {3}".format(message," "*(len("[*] Creating chunks...") - len(message)) + "[" + "#"*block + "-"*(10-block), 1*100, status)
+                            text = "\r{0} {1}] {2}% {3}".format(message," "*(len(longest_message) - len(message)) + "[" + "#"*block + "-"*(10-block), 1*100, status)
 
                             sys.stdout.write(text)
                             sys.stdout.flush()
@@ -471,7 +473,7 @@ class DotBlock:
 
                 block = 10
                 status = "SUCCESS!     \r\n"
-                text = "\r{0} {1}] {2}% {3}".format(message," "*(len("[*] Creating chunks...") - len(message)) + "[" + "#"*block + "-"*(10-block), 100, status)
+                text = "\r{0} {1}] {2}% {3}".format(message," "*(len(longest_message) - len(message)) + "[" + "#"*block + "-"*(10-block), 100, status)
 
                 sys.stdout.write(text)
                 sys.stdout.flush()
@@ -497,7 +499,7 @@ class DotBlock:
                 
                 block = 10
                 status = "SUCCESS!     \r\n"
-                text = "\r{0} {1}] {2}% {3}".format(message," "*(len("[*] Creating chunks...") - len(message)) + "[" + "#"*block + "-"*(10-block), 100, status)
+                text = "\r{0} {1}] {2}% {3}".format(message," "*(len(longest_message) - len(message)) + "[" + "#"*block + "-"*(10-block), 100, status)
 
                 sys.stdout.write(text)
                 sys.stdout.flush()
@@ -520,7 +522,7 @@ class DotBlock:
                 
                 block = 10
                 status = "SUCCESS!     \r\n"
-                text = "\r{0} {1}] {2}% {3}".format(message," "*(len("[*] Creating chunks...") - len(message)) + "[" + "#"*block + "-"*(10-block), 100, status)
+                text = "\r{0} {1}] {2}% {3}".format(message," "*(len(longest_message) - len(message)) + "[" + "#"*block + "-"*(10-block), 100, status)
 
                 sys.stdout.write(text)
                 sys.stdout.flush()                          
@@ -530,7 +532,7 @@ class DotBlock:
             if debug:
                 print("Statistics: ")
                 for i in range(len(self.stats)):
-                    print(str(i) + ": " + str(self.stats[i] / sum(self.stats)))
+                    print(str(i) + "white pixels: " + str(round(self.stats[i] / sum(self.stats)), 4))
         else:
             print("\n[*] Slow mode enabled, now chunking 1 at a time.")
             with open(filename, 'w') as f:
@@ -549,9 +551,9 @@ class DotBlock:
                             show_progress = True if update_progress(current_progress, message) == 0 else False
                         else:
                             if not done and not debug:
-                                block = int(round(10*1))
+                                block = int(round(10))
                                 status = "SUCCESS!     \r\n"
-                                text = "\r{0} [{1}] {2}% {3}".format(message, "#"*block + "-"*(10-block), 1*100, status)
+                                text = "\r{0} [{1}] {2}% {3}".format(message, " "*(len(longest_message) - len(message)) + "[" + "#"*block + "-"*(10-block), 100, status)
 
                                 sys.stdout.write(text)
                                 sys.stdout.flush()
