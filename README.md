@@ -1,19 +1,3 @@
-About
-=====
-
-![Dotty output screenshot](/img/ss/dotty_ss.png)
-
-Dotty takes image files and outputs a text file with the image transformed into a grid of Braille symbols.
-
-Dotty scans the image in 4x2 chunks, creating a Braille symbol for each chunk.
-The output is stored in the `out/` directory.
-
-Requirements
-------------
-+ Python 3
-+ Numpy -- https://scipy.org/install.html
-+ Pillow -- https://pillow.readthedocs.io/en/3.0.x/installation.html
-
 Usage
 -----
 
