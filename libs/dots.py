@@ -363,26 +363,25 @@ class DotBlock:
         Returns:
             A string representing a row of Braille symbols
         """
+        CHUNK_LENGTH = 8 # constant
         converted = []
         # look for matching pattern
         for chunk in chunks:
+            lookup = ""
             chunk_true = 0
-            for value in chunk:
-                chunk_true = chunk_true + 1 if value else chunk_true
+            # create lookup string -- every number either appears once or none
+            for value in range(CHUNK_LENGTH):
+                chunk_true = chunk_true + 1 if chunk[value] else chunk_true
+                lookup += str(value+1) if chunk[value] else ""
 
             self.stats[chunk_true] += 1
 
             if chunk_true == 0: # blank
                 converted.append(self.values["BLANK"][1])
-            elif chunk_true == 8:
+            elif chunk_true == 8: # full
                 converted.append(self.values["12345678"][1])
-            else:
-                for pattern in self.values:   
-                    if chunk_true == len(pattern) and np.array_equal(chunk, self.values[pattern][0]): # check for length before equality
-                        if debug:
-                            print(self.values[pattern][1], end="")
-                        
-                        converted.append(self.values[pattern][1])
+            else:                            
+                converted.append(self.values[lookup][1])
         
         return "".join(converted)
     
@@ -532,7 +531,7 @@ class DotBlock:
             if debug:
                 print("Statistics: ")
                 for i in range(len(self.stats)):
-                    print(str(i) + "white pixels: " + str(round(self.stats[i] / sum(self.stats)), 4))
+                    print(str(i) + "white pixels: " + str(round(self.stats[i] / sum(self.stats), 4)))
         else:
             print("\n[*] Slow mode enabled, now chunking 1 at a time.")
             with open(filename, 'w') as f:
