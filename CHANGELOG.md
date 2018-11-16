@@ -1,23 +1,40 @@
 Changelog 
 ==========
+(v0.2.2) -- 2018-11-16
+======================
+dots.py:DotBlock.convert()
+--------------------------
+### Changed
+* Chunking process (`O(n^2) --> O(n log n^2)`)
+    * Algorithm is now recursive (variation of merge)
+        * merge process recursively splits the image data in half, row-wise: `O(n log n)`
+        * runs indexing/lookup `O(n)` on the individual rows
+        * returns all rows
+    * Algorithm now runs under `1s` most times
+    * full `DotBlock.convert()` process is approximately `O(n log n^2 + n)`
+
+### Added
+* flag: `-m`
+    * new process requires size of `km, 2n` where `k = 2^x`
+    * `-m` (means run `merge`) float_size: will run `O(n^2)` operation (code from v.0.2.1)
+        * `-s` takes precedence over `-f`
+    * in testing, this algorithm runs worse than current implementation
+        * direct indexing >> recursize overlay in this case, it seems
+            * although quite possible implementation is not great yet
 
 (v0.2.1) -- 2018-11-15
 ======================
 dots.py:DotBlock.convert()
 --------------------------
 ### Changed
-* decoding (converting chunk row data to Braille symbols) operation is now `O(n)`
-  * full DotBlock.convert() process is approximately `2 * O(n^2 + n)`
+* decoding (converting chunk row data to Braille symbols) operation: `O(n^2) --> O(n)`
+  * full `DotBlock.convert()` process is approximately `2 * O(n^2 + n)`
     * chunk + init_all + decode_all + write_all: `O(n) + O(n^2) + O(n^2) + O(n)` with init (re-grouping of data) depending on two ints
     * largest deciding factor on running speed is grouping time --> resolution size: `O(n^2)`
     * Should see decreased run times of `> ~95%`
 * Lookup code for slow mode (`O(n^3) -> O(n^2)`)
-<<<<<<< HEAD
-   * Replaced np.array_equal with key lookup; key lookup happens once per row instead of every chunk
-   * Should see greatly reduced times for slow mode without loss of quality
-=======
    * Replaced `np.array_equal` with `key` lookup; `key` lookup happens once per row instead of every chunk
->>>>>>> 47d45502941afc04ed8dc06c1e40e312863f0176
+   * Should see greatly reduced times for slow mode without loss of quality
 
 ### Added
 * resolution option (squish image by `<number>`)
