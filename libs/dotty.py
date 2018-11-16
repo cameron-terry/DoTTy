@@ -17,10 +17,12 @@ try:
               -l --> leave size (adjusts png minimally)
               -n --> no invert (inverts image colors by default)
               -s --> slow mode (old method of converting)
+              -m --> merge (currently slower than current implementation)
             You can combine them as follows: -dl, -ld, -dn, -lnd, etc...
         res: 
             1 --> self.RESOLUTION_FACTOR = 1 (no stretch)
                   self.RESOLUTION_FACTOR = 2 (transpose, default)
+                  self.RESOLUTION_FACTOR = [1-9] (resolution 1:[1-9])
         ''')
     elif len(sys.argv) == 5 and ((sys.argv[1] in flags) or (sys.argv[2] in flags) \
                                                                             or (sys.argv[3] in flags)):
@@ -35,10 +37,12 @@ try:
                     -l --> leave size (adjusts png minimally)
                     -n --> no invert (inverts image colors by default)
                     -s --> slow mode (old method of converting)
+                    -m --> merge (currently slower than current implementation)
                     You can combine them as follows: -dl, -ld, -dn, -lnd, etc...
                 res: 
                     1 --> self.RESOLUTION_FACTOR = 1 (no stretch)
                           self.RESOLUTION_FACTOR = 2 (transpose, default)
+                          self.RESOLUTION_FACTOR = [1-9] (resolution 1:[1-9])
                 ''')
         else:
             try:
@@ -46,16 +50,19 @@ try:
                 debug      = "d" in sys.argv[4]
                 invert     = "n" not in sys.argv[4]
                 slow_mode  = "s" in sys.argv[4]
+                float_size = "m" in sys.argv[4]
                 find_res   = [x for x in range(1,10) if str(x) in sys.argv[4]]
                 res_mode   = find_res[0] if len(find_res) != 0 else 2
                     
                 ic = ImageConv(sys.argv[1], filename=sys.argv[2], size=( int(sys.argv[3].split(",")[0]), 
                                                                         int(sys.argv[3].split(",")[1]) ), 
-                                                                     leave_size=leave_size, debug=debug, invert=invert, slow_mode=slow_mode, res_mode=res_mode)
+                                                                     leave_size=leave_size, debug=debug, invert=invert, 
+                                                                     slow_mode=slow_mode, res_mode=res_mode, float_size=float_size)
             except ValueError:
                 ic = ImageConv(sys.argv[1], filename=sys.argv[3], size=( int(sys.argv[2].split(",")[0]), 
                                                                         int(sys.argv[2].split(",")[1]) ), 
-                                                                     leave_size=leave_size, debug=debug, invert=invert, slow_mode=slow_mode, res_mode=res_mode)
+                                                                     leave_size=leave_size, debug=debug, invert=invert, 
+                                                                     slow_mode=slow_mode, res_mode=res_mode, float_size=float_size)
             except IOError:
                 die("[!] Operation failed!\n[!] File could not be written.\
                     \n[*] The file may have been created, and may contain partial data.")
@@ -76,15 +83,19 @@ try:
                 debug      = "d" in sys.argv[3]
                 invert     = "n" not in sys.argv[3]
                 slow_mode  = "s" in sys.argv[3]
+                float_size = "m" in sys.argv[3]
                 find_res   = [x for x in range(1,10) if str(x) in sys.argv[3]]
                 res_mode   = find_res[0] if len(find_res) != 0 else 2
 
                 ic = ImageConv( sys.argv[1], size=( int(sys.argv[2].split(",")[0]), 
                                                     int(sys.argv[2].split(",")[1]) ), 
-                                                    leave_size=leave_size, debug=debug, invert=invert, slow_mode=slow_mode, res_mode=res_mode)
+                                                    leave_size=leave_size, debug=debug, invert=invert, 
+                                                    slow_mode=slow_mode, res_mode=res_mode, float_size=float_size)
             except ValueError:
                 try:
-                    ic = ImageConv(sys.argv[1], filename=sys.argv[2], leave_size=leave_size, debug=debug, invert=invert, slow_mode=slow_mode, res_mode=res_mode)
+                    ic = ImageConv(sys.argv[1], filename=sys.argv[2], leave_size=leave_size, 
+                                                debug=debug, invert=invert, slow_mode=slow_mode, 
+                                                res_mode=res_mode, float_size=float_size)
                 except IOError:
                     die("[!] Operation failed!\n[!] File could not be written.\
                     \n[*] The file may have been created, and may contain partial data.")           
@@ -106,10 +117,13 @@ try:
                 debug      = "d" in sys.argv[2]
                 invert     = "n" not in sys.argv[2]
                 slow_mode  = "s" in sys.argv[2]
+                float_size = "m" in sys.argv[2]
                 find_res   = [x for x in range(1,10) if str(x) in sys.argv[2]]
                 res_mode   = find_res[0] if len(find_res) != 0 else 2
 
-                ic = ImageConv(sys.argv[1], leave_size=leave_size, debug=debug, invert=invert, slow_mode=slow_mode, res_mode=res_mode)
+                ic = ImageConv(sys.argv[1], leave_size=leave_size, debug=debug, 
+                                            invert=invert, slow_mode=slow_mode, 
+                                            res_mode=res_mode, float_size=float_size)
             except IOError:
                 die("[!] Operation failed!\n[!] File could not be written.\
                     \n[*] The file may have been created, and may contain partial data.")
@@ -125,11 +139,13 @@ try:
         args: -d --> debug (print output to console)
               -l --> leave size (adjusts png minimally)
               -n --> no invert (inverts image colors by default)
-              -s --> slow mode (old method of converting)
+              -s --> slow mode (original method of converting)
+              -m --> merge (currently slower than current implementation)
             You can combine them as follows: -dls, -ld, -dn, -lnd, etc...
         res: 
             1 --> self.RESOLUTION_FACTOR = 1 (no stretch)
                   self.RESOLUTION_FACTOR = 2 (transpose)
+                  self.RESOLUTION_FACTOR = [1-9] (resolution 1:[1-9])
         ''')
 except KeyboardInterrupt:
     die("\n[!] Process killed by user")

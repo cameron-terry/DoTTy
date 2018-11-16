@@ -56,6 +56,7 @@ class DotBlock:
         self.CHUNK_SIZE = 8 # constant
 
         self.stats = [0, 0, 0, 0, 0, 0, 0, 0, 0] # used for statistics
+        self.GLOBAL_MERGE_COUNT = 0 # used for merge
 
     # O(n)
     def convert_chunk(self, chunks):
@@ -74,13 +75,11 @@ class DotBlock:
         # iterate through, decoding each chunk
         for chunk in chunks:
             # look for matching pattern
-            lookup = ""
-            chunk_true = 0
+            lookup = "" # used to build key
 
-            # create lookup string, O(CHUNK_SIZE) -- every number either appears once or none 
-            for value in range(self.CHUNK_SIZE):
-                chunk_true = chunk_true + 1 if chunk[value] else chunk_true
-                lookup += str(value+1) if chunk[value] else ""
+            # generate lookup key, O(CHUNK_SIZE) -- every number either appears once or none     
+            lookup = "".join([lookup + str(value+1) if chunk[value] else lookup + "" for value in range(self.CHUNK_SIZE)])
+            chunk_true = len(lookup)
 
             self.stats[chunk_true] += 1
 
@@ -90,6 +89,32 @@ class DotBlock:
         # return decoded string        
         return "".join(converted)
     
+    # O(n log 2n^2) = O(n log n^2)
+    def merge_decode(self, arr):
+        if len(arr) < 4:
+            die("[!] Underflow")
+        elif len(arr) == 4:
+            # chunk each row -- O(n)
+            chunks = [[
+                arr[0][0 + (2 * j)], arr[0][1 + (2 * j)],
+                arr[1][0 + (2 * j)], arr[1][1 + (2 * j)],
+                arr[2][0 + (2 * j)], arr[2][1 + (2 * j)],
+                arr[3][0 + (2 * j)], arr[3][1 + (2 * j)],            
+            ] for j in range(len(arr[0]) // 2)]
+            
+            # O(n)
+            return self.convert_chunk(chunks)
+        else:
+            current_progress = self.GLOBAL_MERGE_COUNT / (self.Y // 4)
+
+            left = self.merge_decode(arr[:len(arr)//2])
+            right = self.merge_decode(arr[len(arr)//2:])
+
+            self.GLOBAL_MERGE_COUNT += 1
+            
+            show_current_progress(current_progress, "[*] Merge decoding...")
+            return left + right
+
     # O(n)
     def generate_chunks(self, chunks, longest_message, debug, clock=-1):
         """
@@ -165,19 +190,20 @@ class DotBlock:
         show_progress = True
     
         message = "[*] Initializing..."
-        for j in range(0, self.X // 2, self.RESOLUTION_FACTOR): # cols of braille unicode
-            # chunk section
-            for _ in range(len(chunks)):
-                chunks[_].append([
-                    self.I[(_ * 4)][0 + (2 * j)],     self.I[(_ * 4)][1 + (2 * j)],
-                    self.I[(_ * 4 + 1)][0 + (2 * j)], self.I[(_ * 4 + 1)][1 + (2 * j)],
-                    self.I[(_ * 4 + 2)][0 + (2 * j)], self.I[(_ * 4 + 2)][1 + (2 * j)],
-                    self.I[(_ * 4 + 3)][0 + (2 * j)], self.I[(_ * 4 + 3)][1 + (2 * j)],            
-                ])
+
+        # chunk section
+        for _ in range(len(chunks)): # cols of braille unicode
+            chunks[_] = [chunks[_][0]] + [[
+                self.I[(_ * 4)][0 + (2 * j)],     self.I[(_ * 4)][1 + (2 * j)],
+                self.I[(_ * 4 + 1)][0 + (2 * j)], self.I[(_ * 4 + 1)][1 + (2 * j)],
+                self.I[(_ * 4 + 2)][0 + (2 * j)], self.I[(_ * 4 + 2)][1 + (2 * j)],
+                self.I[(_ * 4 + 3)][0 + (2 * j)], self.I[(_ * 4 + 3)][1 + (2 * j)],            
+            ] for j in range(0, self.X // 2, self.RESOLUTION_FACTOR)]
+            
 
             # update progress
             if show_progress:
-                current_progress = j / ((self.X // 2) - 1)
+                current_progress = _ / (len(chunks) - 1)
                 show_progress = show_current_progress(current_progress, message, debug=debug)
 
         if clock != -1:
@@ -263,8 +289,9 @@ class DotBlock:
             td = time.clock()
             out_success(message, longest_message, clock, td)
 
+    # O(n log n^2) or O(n^2), depending on user specifications
     # O(n^2) with speed and quality differences depending on version ran
-    def convert(self, filename, debug=False, slow_mode=False):
+    def convert(self, filename, debug=False, slow_mode=False, float_size=False):
         """
         Convert image data to Braille symbols and save to .txt file.
 
@@ -281,7 +308,7 @@ class DotBlock:
         if filename[-4:] != ".txt":
             filename += ".txt"
 
-        # process is O(n) + O(n^2) + O(n^2) + O(n) = O(2n^2) + O(2n) = 2 * O(n^2 + n)
+        
         if not slow_mode:     
             longest_message = "[*] Creating chunks..."
 
@@ -294,23 +321,39 @@ class DotBlock:
             # start clock for timing
             td = time.clock()
             
-            # generate chunks: O(n)
-            td = self.generate_chunks(chunks, longest_message, debug=debug, clock=td)
+            # process is O(n) + O(n^2) + O(n^2) + O(n) = O(2n^2) + O(2n) = 2 * O(n^2 + n)
+            if not float_size:
+                # generate chunks: O(n)
+                td = self.generate_chunks(chunks, longest_message, debug=debug, clock=td)
+                
+                # initialize chunks: O(n^2)
+                td = self.initialize_chunks(chunks, longest_message, debug=debug, clock=td)
+
+                # decode chunks: O(n^2)
+                outfile, td = self.decode(chunks, longest_message, debug=debug, clock=td)
+
+                # write to file: O(n)
+                self.write_to_file(filename, len(chunks), outfile, longest_message, debug=debug, clock=td)                        
             
-            # initialize chunks: O(n^2)
-            td = self.initialize_chunks(chunks, longest_message, debug=debug, clock=td)
+                if debug:
+                    print_stats(self.stats)
+            # merge decode: O(n log 2n^2)
+            else:
+                text = self.merge_decode(self.I)
+                td2 = time.clock()
+                out_success("[*] Merge decoding...", longest_message, td, td2)
 
-            # decode chunks: O(n^2)
-            outfile, td = self.decode(chunks, longest_message, debug=debug, clock=td)
+                # write to file -- O(n)
+                with open(filename, "w") as f:
+                    for line in range(len(text)):
+                        f.write(text[line])
+                        if (line + 1) % (self.X / 2) == 0:
+                            f.write("\n")
 
-            # write to file: O(n)
-            self.write_to_file(filename, len(chunks), outfile, longest_message, debug=debug, clock=td)                        
-           
-            if debug:
-                print_stats(self.stats)
         # -s (estimated runtime-complexity O(3n^2 + 2n)
         else:
             print("\n[*] Slow mode enabled, now chunking 1 at a time.")
+            td = time.clock()
             with open(filename, 'w') as f:
                 print("[*] Writing to {}...".format(filename))
                 print(DIVIDER)
@@ -360,6 +403,9 @@ class DotBlock:
                         print("\n")
                     
                     f.write("\n")
+
+                td_2 = time.clock()
+                print("time: " + str(td_2 - td))
 
         print(DIVIDER)
         print("[+] Output sent to {}.".format(filename))

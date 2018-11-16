@@ -5,7 +5,9 @@ import time
 import numpy as np
 
 from dots import DotBlock
-from helpers import die, DIVIDER
+from helpers import die, DIVIDER, next_power_of_2
+
+VERSION = "v0.2.2"
 
 class ImageConv:
     """
@@ -15,7 +17,7 @@ class ImageConv:
         x (int): width
         y (int): height
     """
-    def __init__(self, pic, filename="output.txt", size=(240, 240), leave_size=False, debug=False, invert=True, slow_mode=False, res_mode=2):
+    def __init__(self, pic, filename="output.txt", size=(240, 240), leave_size=False, debug=False, invert=True, slow_mode=False, res_mode=2, float_size=False):
         """
         Initializes a `numpy` array for conversion using `DotBlock.convert()`.
 
@@ -57,6 +59,9 @@ class ImageConv:
         # readjust size to fit braille chars
         self.X = img.size[0] - (img.size[0] % 2)
         self.Y = img.size[1] - (img.size[1] % 4)
+
+        if float_size:
+            self.Y = next_power_of_2(self.Y)
         
         assert self.X % 2 == 0, "Rows failed to initialize."
         assert self.Y % 4 == 0, "Columns failed to initialize."
@@ -68,7 +73,7 @@ class ImageConv:
             self.Y = size[1]
 
         print(DIVIDER)
-        print("Dotty, for pixels to Unicode .txt (v0.2.1)")
+        print("Dotty, for pixels to Unicode .txt ({})".format(VERSION))
         print(DIVIDER)
         print("[*] Size: {rows}x{cols}".format(rows=self.X, cols=self.Y))  
         print("[*] Rows: {rows}, Cols: {cols}".format(rows=self.X // 4, cols=self.Y // 4))
@@ -79,7 +84,7 @@ class ImageConv:
         db = DotBlock(self.X, self.Y, I, res_mode=res_mode)
 
         start_time = time.clock()
-        db.convert(filename, debug=debug, slow_mode=slow_mode)
+        db.convert(filename, debug=debug, slow_mode=slow_mode, float_size=float_size)
         end_time = time.clock() - start_time
 
         if debug:
