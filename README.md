@@ -27,7 +27,7 @@ Specifying the output file is a text file is not necessary.
 
 If there are problems with the image resolution after trying `-<number>`, try using `-s`.
 Although Dotty has been optimized, there may be resolution issues when compared to the old version.
-`-s` runs the original code **(much slower, however: be warned!)**.
+`-s` runs the original code.
 
 #### Example uses
 * Create a `240x240`-sized (60 rows, 60 columns) text file of `foo.jpg` and output to `../out/output.txt` as well as the console:
