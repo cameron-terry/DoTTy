@@ -43,7 +43,7 @@ dots.py:DotBlock.convert_chunk()
 --------------------------------
 ### Changed
 #### Lookup time 
-  * is now `O(1)`
+  * now `O(1)`
   * removed `np.array_equal()` comparison, instead build key in constant time for lookup
   * `lookup` holds the key and is used when `chunk_true` is not 0 ~~or 8~~
     * initialized at the same time as `chunk_true`, in constant time (`sizeof chunk = 8`)
@@ -92,9 +92,10 @@ dots.py:DotBlock.convert()
 * separated operations into different sections
     * chunk creation: `O(n)`
     * initialization (filling the rest of the chunks in): `O(n^2)`
-    * decoding (converting chunk row data to Braille symbols): `O(n^2)`
+    * decoding (converting chunk row data to Braille symbols): `O(n^2.275)` 
+      * (base algorithm is `O(n^3)` but optimizations bring it closer to `O(n^2)` with `O(1)` comparison check for short circuit succeeding a variable amount)
     * writing to file: `O(n)`
-    * sum of operations: `O(n^2)`
+    * sum of operations: `O(n^2.275)` (depends on distribution of pixels) 
 
 ### Added
 * old version as option (slow_mode): `-s`
@@ -103,6 +104,11 @@ dots.py:DotBlock.convert()
 
 dots.py:DotBlock.convert_chunk()
 --------------------------------
+### Changed
+* lookup functionality is now somewhere between `O(1)` and `O(n)`
+    * short-circuit `O(1)` comparison added to reduce times linear search is used
+    * short-circuit removes a majority of the keys from the search space
+        
 ### Added
 * variable `chunk_true` to quickly identify all `black/white` chunks
     * `chunk_true` tells how many pixels are white in a chunk 
@@ -176,7 +182,7 @@ dots.py:DotBlock.convert_chunk()
   ```
         
 ![Kingfisher comparison](/img/ss/dotty_nvs.png)
-Running without slow mode resulted in an `83%` running-time decrease without significant loss of quality (`0.22%` difference in word count, `18.95%` difference in bytes). Slow time roughly follows `8t^3 + t^2`.
+Running without slow mode resulted in an `83%` running-time decrease without significant loss of quality (`0.22%` difference in word count, `18.95%` difference in bytes). Slow mode time roughly follows `8t^3 + t^2`.
 
    ```sh
        $ python dotty.py ../img/user_images/manhattan.jpg m2 -lnd
@@ -198,7 +204,7 @@ Running without slow mode resulted in an `83%` running-time decrease without sig
        ...
        time: 39.194958 (roughly double)
    ```
-Running without slowmode and increasing the definition resulted in a `71.6%` running-time decrease, `0.38%` difference in word count, `18.47%` difference in bytes.
+Running without slow mode and increasing the definition resulted in a `71.6%` running-time decrease, `0.38%` difference in word count, and `18.47%` difference in bytes.
         
    | white pixels | percentage |
    |--------------|------------|
