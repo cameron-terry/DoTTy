@@ -11,9 +11,10 @@ Usage
 | `l`              | leave size unchanged (as close as possible)          |
 | `n`              | no invert (inverts image by default)                 |
 | `s`              | re-groups image 1 chunk at a time (old behavior)     |
+| `m`              | uses merge-like algorithm to chunk / decode          |
 | `1` (res)        | sets resolution to `1:1`                             |
 | `2` (res)        | sets resolution to `transpose (default)`             |
-| `<number>` (res) | sets resolution to `1:<number>`                        |
+| `<number>` (res) | sets resolution to `1:<number>`                      |
 #### Command-line usage
 The path to the image should *always* be after `dotty.py`.
 The output file and size change should come after (in that order, respectively), if specified.
