@@ -4,16 +4,13 @@ Changelog
 ======================
 dots.py:DotBlock.convert()
 --------------------------
-### Changed
+### Added
 * Chunking process (`O(n^2) --> O(n log n^2)`)
-    * Algorithm is now recursive (variation of merge)
+    * Algorithm is recursive (variation of merge)
         * merge process recursively splits the image data in half, row-wise: `O(n log n)`
         * runs indexing/lookup `O(n)` on the individual rows
         * returns all rows
-    * Algorithm now runs under `1s` most times
     * full `DotBlock.convert()` process is approximately `O(n log n^2 + n)`
-
-### Added
 * flag: `-m`
     * new process requires size of `km, 2n` where `k = 2^x`
     * `-m` (means run `merge`) float_size: will run `O(n^2)` operation (code from v.0.2.1)
