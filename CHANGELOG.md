@@ -8,10 +8,10 @@ dots.py:DotBlock.convert()
 ### Changed
 * decoding (converting chunk row data to Braille symbols) operation is now `O(n)`
   * full DotBlock.convert() process is approximately `2 * O(n^2 + n)`
-    * chunk + init + decode + write: `O(n) + O(n^2) + O(n^2) + O(n)` with init (re-grouping of data) depending on two ints
+    * chunk + init_all + decode_all + write_all: `O(n) + O(n^2) + O(n^2) + O(n)` with init (re-grouping of data) depending on two ints
 * largest deciding factor on running speed is grouping time --> resolution size: `O(n^2)`
 * Should see decreased run times of `> ~95%`
-* Lookup code for slow mode (`O(n^2) -> O(n)`)
+* Lookup code for slow mode (`O(n^3) -> O(n^2)`)
    * Replaced np.array_equal with key lookup; key lookup happens once per row instead of every chunk
 
 ### Added
