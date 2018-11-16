@@ -13,6 +13,7 @@ dots.py:DotBlock.convert()
 * Should see decreased run times of `> ~95%`
 * Lookup code for slow mode (`O(n^3) -> O(n^2)`)
    * Replaced np.array_equal with key lookup; key lookup happens once per row instead of every chunk
+   * Should see greatly reduced times for slow mode without loss of quality
 
 ### Added
 * resolution option (squish image by `<number>`)
