@@ -20,11 +20,12 @@ dots.py:DotBlock.convert()
 dots.py:DotBlock.convert_chunk()
 --------------------------------
 ### Changed
-* Lookup time is now `O(1)`
-  * removed `np.array_equal` comparison, instead build key in constant time for lookup
+#### Lookup time 
+  * is now `O(1)`
+  * removed `np.array_equal()` comparison, instead build key in constant time for lookup
   * `lookup` holds the key and is used when `chunk_true` is not 0 ~~or 8~~
     * initialized at the same time as `chunk_true`, in constant time (`sizeof chunk = 8`)
-* Run times:
+#### Run times:
   ```sh
       $ python dotty.py ../img/user_images/kingfisher.jpg m2 -lnd
       ...
@@ -139,51 +140,55 @@ dots.py:DotBlock.convert_chunk()
         * `24.28%` of the chunks only needed to be compared with `3.24%` of possible comparisons
         * `75.89%` of the chunks needed to be compared with `63.6%` of possible comparisons
 
-    * Run times:
-        ```sh
-            $ python dotty.py ../img/user_images/kingfisher.jpg m2 -lnd
-            ...
-            time: 14.260033
-        ```
-        ```sh
-            $ python dotty.py ../img/user_images/kingfisher.jpg m2 -lnds
-            ...
-            time: 83.920389
-        ```
-        ![Kingfisher comparison](/img/ss/dotty_nvs.png)
-        Running without slow mode resulted in an `83%` running-time decrease without significant loss of quality (`0.22%` difference in word count, `18.95%` difference in bytes). Slow time roughly follows `8t^3 + t^2`.
-        ```sh
-            $ python dotty.py ../img/user_images/manhattan.jpg m2 -lnd
-            ...
-            time: 19.734783999999998
-        ```
-        ```sh
-            $ python dotty.py ../img/user_images/manhattan.jpg m2 -lnds
-            ...
-            time: 138.215585
-        ```
-        Assuming `t=4.44s:` 
-        * `3t^3 / 2 = 131.292s` which is under the actual time by `5.05%`.
-        ![Manhattan comparison -- resolution set to 2](/img/ss/dotty_nvs2.png)
-        To improve the definition, change `self.RESOLUTION_FACTOR` to `1`, and re-run:
-        ```sh
-            $ python dotty.py ../img/user_images/manhattan.jpg m2 -lnd1
-            ...
-            time: 39.194958 (roughly double)
-        ```
-      Running without slowmode and increasing the definition resulted in a `71.6%` running-time decrease, `0.38%` difference in word count, `18.47%` difference in bytes
+ #### Run times:
+ 
+  ```sh
+      $ python dotty.py ../img/user_images/kingfisher.jpg m2 -lnd
+      ...
+      time: 14.260033
+  ```
+  ```sh
+      $ python dotty.py ../img/user_images/kingfisher.jpg m2 -lnds
+      ...
+      time: 83.920389
+  ```
         
-           | white pixels | percentage |
-           |--------------|------------|
-           |       0      | 0.0363     |
-           |       1      | 0.1762     |
-           |       2      | 0.2452     |
-           |       3      | 0.1641     |
-           |       4      | 0.1751     |
-           |       5      | 0.0756     |
-           |       6      | 0.0598     |
-           |       7      | 0.0588     |
-           |       8      | 0.0088     |
+![Kingfisher comparison](/img/ss/dotty_nvs.png)
+Running without slow mode resulted in an `83%` running-time decrease without significant loss of quality (`0.22%` difference in word count, `18.95%` difference in bytes). Slow time roughly follows `8t^3 + t^2`.
+
+   ```sh
+       $ python dotty.py ../img/user_images/manhattan.jpg m2 -lnd
+       ...
+       time: 19.734783999999998
+   ```
+   ```sh
+       $ python dotty.py ../img/user_images/manhattan.jpg m2 -lnds
+       ...
+       time: 138.215585
+   ```
+ Assuming `t=4.44s:` 
+ * `3t^3 / 2 = 131.292s` which is under the actual time by `5.05%`.
+ ![Manhattan comparison -- resolution set to 2](/img/ss/dotty_nvs2.png)
+ To improve the definition, change `self.RESOLUTION_FACTOR` to `1`, and re-run:
+   
+   ```sh
+       $ python dotty.py ../img/user_images/manhattan.jpg m2 -lnd1
+       ...
+       time: 39.194958 (roughly double)
+   ```
+Running without slowmode and increasing the definition resulted in a `71.6%` running-time decrease, `0.38%` difference in word count, `18.47%` difference in bytes.
         
-         Note the distribution is roughly the same.
-        ![Manhattan comparison -- resolution set to 1](/img/ss/dotty_nvs3.png)
+   | white pixels | percentage |
+   |--------------|------------|
+   |       0      | 0.0363     |
+   |       1      | 0.1762     |
+   |       2      | 0.2452     |
+   |       3      | 0.1641     |
+   |       4      | 0.1751     |
+   |       5      | 0.0756     |
+   |       6      | 0.0598     |
+   |       7      | 0.0588     |
+   |       8      | 0.0088     |
+
+Note the distribution is roughly the same.
+![Manhattan comparison -- resolution set to 1](/img/ss/dotty_nvs3.png)
