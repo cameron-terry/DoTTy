@@ -157,7 +157,7 @@ dots.py:DotBlock.convert_chunk()
   ```
         
 ![Kingfisher comparison](/img/ss/dotty_nvs.png)
-Running without slow mode resulted in an `83%` running-time decrease without significant loss of quality (`0.22%` difference in word count, `18.95%` difference in bytes). Slow time roughly follows `8t^3 + t^2`.
+Running without slow mode resulted in an `83%` running-time decrease without significant loss of quality (`0.22%` difference in word count, `18.95%` difference in bytes). Slow mode time roughly follows `8t^3 + t^2`.
 
    ```sh
        $ python dotty.py ../img/user_images/manhattan.jpg m2 -lnd
@@ -179,7 +179,7 @@ Running without slow mode resulted in an `83%` running-time decrease without sig
        ...
        time: 39.194958 (roughly double)
    ```
-Running without slowmode and increasing the definition resulted in a `71.6%` running-time decrease, `0.38%` difference in word count, `18.47%` difference in bytes.
+Running without slow mode and increasing the definition resulted in a `71.6%` running-time decrease, `0.38%` difference in word count, and `18.47%` difference in bytes.
         
    | white pixels | percentage |
    |--------------|------------|
