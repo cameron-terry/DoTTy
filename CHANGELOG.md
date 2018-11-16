@@ -73,9 +73,10 @@ dots.py:DotBlock.convert()
 * separated operations into different sections
     * chunk creation: `O(n)`
     * initialization (filling the rest of the chunks in): `O(n^2)`
-    * decoding (converting chunk row data to Braille symbols): `O(n^3)` (closer to `O(n^2)` with `O(1)` comparison check for short circuit succeeding a variable amount)
+    * decoding (converting chunk row data to Braille symbols): `O(n^2.275)` 
+      * (base algorithm is `O(n^3)` but optimizations bring it closer to `O(n^2)` with `O(1)` comparison check for short circuit succeeding a variable amount)
     * writing to file: `O(n)`
-    * sum of operations: `O(n^2)`
+    * sum of operations: `O(n^2.275)` (depends on distribution of pixels) 
 
 ### Added
 * old version as option (slow_mode): `-s`
