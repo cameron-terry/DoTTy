@@ -24,7 +24,7 @@ dots.py:DotBlock.convert_chunk()
 --------------------------------
 ### Changed
 #### Lookup time 
-  * is now `O(1)`
+  * now `O(1)`
   * removed `np.array_equal()` comparison, instead build key in constant time for lookup
   * `lookup` holds the key and is used when `chunk_true` is not 0 ~~or 8~~
     * initialized at the same time as `chunk_true`, in constant time (`sizeof chunk = 8`)
@@ -73,7 +73,7 @@ dots.py:DotBlock.convert()
 * separated operations into different sections
     * chunk creation: `O(n)`
     * initialization (filling the rest of the chunks in): `O(n^2)`
-    * decoding (converting chunk row data to Braille symbols): `O(n^2)`
+    * decoding (converting chunk row data to Braille symbols): `O(n^3)` (closer to `O(n^2)` with `O(1)` comparison check for short circuit succeeding a variable amount)
     * writing to file: `O(n)`
     * sum of operations: `O(n^2)`
 
@@ -84,6 +84,11 @@ dots.py:DotBlock.convert()
 
 dots.py:DotBlock.convert_chunk()
 --------------------------------
+### Changed
+* lookup functionality is now somewhere between `O(1)` and `O(n)`
+    * short-circuit `O(1)` comparison added to reduce times linear search is used
+    * short-circuit removes a majority of the keys from the search space
+        
 ### Added
 * variable `chunk_true` to quickly identify all `black/white` chunks
     * `chunk_true` tells how many pixels are white in a chunk 
