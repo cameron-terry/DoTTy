@@ -7,10 +7,8 @@ try:
     leave_size = False
     debug = False
 
-    flags = ["-d", "-l", "-n", "s",
-             "-dl", "-ld", "-nd", "-dn", "-nl", "-ln", "-ds", "-ls", "-ns", "-sn", "-sl", "-sd",
-             "-dln", "-dnl", "-dsl", "-dls", "-dsn", "-dns", "-ldn", "-lnd", "-lds", "-lsd", "-lsn", "-lns",
-             "-ndl", "-nld", "-nsl", "-nls", "-nds", "-nsd", "-sdl", "-sld", "-snd", "-sdn", "-sln", "-snl"]
+    with open('flags.txt', 'r') as f:
+        flags = [line.replace('\n', '') for line in f]
 
     if len(sys.argv) > 5:
         die('''
