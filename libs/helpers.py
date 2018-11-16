@@ -1,5 +1,7 @@
 import sys
 
+DIVIDER = "="*48
+
 def die(message):
     """Print status and exit."""
     print(message)

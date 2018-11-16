@@ -281,8 +281,6 @@ class DotBlock:
         if filename[-4:] != ".txt":
             filename += ".txt"
 
-        DIVIDER = "="*48
-
         # process is O(n) + O(n^2) + O(n^2) + O(n) = O(2n^2) + O(2n) = 2 * O(n^2 + n)
         if not slow_mode:     
             longest_message = "[*] Creating chunks..."

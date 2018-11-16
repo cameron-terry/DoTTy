@@ -1,7 +1,8 @@
+-
 -d
 -l
 -n
-s
+-s
 -dl
 -ld
 -nd

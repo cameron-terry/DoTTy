@@ -5,7 +5,7 @@ import time
 import numpy as np
 
 from dots import DotBlock
-from helpers import die
+from helpers import die, DIVIDER
 
 class ImageConv:
     """
@@ -67,6 +67,9 @@ class ImageConv:
             self.X = size[0]
             self.Y = size[1]
 
+        print(DIVIDER)
+        print("Dotty, for pixels to Unicode .txt (v0.2.1)")
+        print(DIVIDER)
         print("[*] Size: {rows}x{cols}".format(rows=self.X, cols=self.Y))  
         print("[*] Rows: {rows}, Cols: {cols}".format(rows=self.X // 4, cols=self.Y // 4))
 
