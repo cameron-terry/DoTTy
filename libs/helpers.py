@@ -11,7 +11,7 @@ def print_stats(stats_list):
     for i in range(len(stats_list)):
         print("[*] " + str(i) + " white pixels: " + str(round(stats_list[i] / sum(stats_list), 4)))
 
-def update_progress(progress, message, bar_length=10):
+def update_progress(progress, message, longest_message, bar_length=10):
     """
     Updates progress on action.
 
@@ -46,17 +46,17 @@ def update_progress(progress, message, bar_length=10):
         return 1
 
     block = int(round(bar_length*progress))
-    text = "\r{0} {1}] {2}% {3}".format( message," "*(len("[*] Creating chunks...") - len(message)) + "[" + "#"*block + "-"*(bar_length-block), round(progress*100, 2), status )
+    text = "\r{0} {1}] {2}% {3}".format( message," "*(len(longest_message) - len(message)) + "[" + "#"*block + "-"*(bar_length-block), round(progress*100, 2), status )
 
     sys.stdout.write(text)
     sys.stdout.flush()
     
     return 0
 
-def show_current_progress(current_progress, message, debug):
+def show_current_progress(current_progress, message, longest_message="[*] Longest message...", debug=False):
     """Show current progress"""
     if not debug:
-        return True if update_progress(current_progress, message) == 0 else False
+        return True if update_progress(current_progress, message, longest_message=longest_message) == 0 else False
 
 def out_success(message, longest_message, clock, td):
     """

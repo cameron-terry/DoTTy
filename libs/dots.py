@@ -53,6 +53,7 @@ class DotBlock:
         self.I = img
 
         self.RESOLUTION_FACTOR = res_mode  # change this to affect how the picture is scaled
+        self.CHUNK_SIZE = 8 # constant
 
         self.stats = [0, 0, 0, 0, 0, 0, 0, 0, 0] # used for statistics
 
@@ -67,16 +68,17 @@ class DotBlock:
         Returns:
             A string representing a row of Braille symbols
         """
-        CHUNK_LENGTH = 8 # constant
+        # init array to hold values
         converted = []
 
+        # iterate through, decoding each chunk
         for chunk in chunks:
             # look for matching pattern
             lookup = ""
             chunk_true = 0
 
-            # create lookup string, O(8) -- every number either appears once or none 
-            for value in range(CHUNK_LENGTH):
+            # create lookup string, O(CHUNK_SIZE) -- every number either appears once or none 
+            for value in range(self.CHUNK_SIZE):
                 chunk_true = chunk_true + 1 if chunk[value] else chunk_true
                 lookup += str(value+1) if chunk[value] else ""
 
@@ -84,7 +86,8 @@ class DotBlock:
 
             # lookup value to append -- O(1)
             converted.append(self.values["BLANK"][1]) if chunk_true == 0 else converted.append(self.values[lookup][1])                           
-                
+
+        # return decoded string        
         return "".join(converted)
     
     # O(n)
@@ -223,6 +226,7 @@ class DotBlock:
         
         return -1
 
+    # O(n)
     def write_to_file(self, filename, chunk_length, outfile, longest_message, debug, clock=-1):
         if clock != -1:
             clock = time.clock()
@@ -259,6 +263,7 @@ class DotBlock:
             td = time.clock()
             out_success(message, longest_message, clock, td)
 
+    # O(n^2) with speed and quality differences depending on version ran
     def convert(self, filename, debug=False, slow_mode=False):
         """
         Convert image data to Braille symbols and save to .txt file.
@@ -278,7 +283,7 @@ class DotBlock:
 
         DIVIDER = "="*48
 
-        # process is O(n) + O(n^2) + O(n) + O(n) = O(n^2) + O(3n) = O(n^2 + 3n)
+        # process is O(n) + O(n^2) + O(n^2) + O(n) = O(2n^2) + O(2n) = 2 * O(n^2 + n)
         if not slow_mode:     
             longest_message = "[*] Creating chunks..."
 
@@ -297,7 +302,7 @@ class DotBlock:
             # initialize chunks: O(n^2)
             td = self.initialize_chunks(chunks, longest_message, debug=debug, clock=td)
 
-            # decode chunks: O(n)
+            # decode chunks: O(n^2)
             outfile, td = self.decode(chunks, longest_message, debug=debug, clock=td)
 
             # write to file: O(n)
@@ -305,7 +310,7 @@ class DotBlock:
            
             if debug:
                 print_stats(self.stats)
-        # -s (estimated runtime-complexity O(8n^3 + n^2))
+        # -s (estimated runtime-complexity O(3n^2 + 2n)
         else:
             print("\n[*] Slow mode enabled, now chunking 1 at a time.")
             with open(filename, 'w') as f:
@@ -324,7 +329,7 @@ class DotBlock:
                         # update progress
                         current_progress = (i*4 + 4) / self.Y
                         if show_progress and not debug:
-                            show_progress = True if update_progress(current_progress, message) == 0 else False
+                            show_progress = True if update_progress(current_progress, message, longest_message=longest_message) == 0 else False
                         else:
                             if not done and not debug:
                                 block = int(round(10))
@@ -347,6 +352,10 @@ class DotBlock:
                         chunks.append(chunk)
 
                     out = self.convert_chunk(chunks)
+
+                    if debug:
+                        print(out)
+
                     f.write(out) 
 
                     if debug:
