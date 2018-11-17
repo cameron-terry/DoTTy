@@ -7,7 +7,7 @@ import numpy as np
 from dots import DotBlock
 from helpers import die, DIVIDER, next_power_of_2
 
-VERSION = "v0.2.2"
+VERSION = "v0.2.4"
 
 class ImageConv:
     """

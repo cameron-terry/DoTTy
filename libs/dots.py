@@ -58,13 +58,68 @@ class DotBlock:
         self.stats = [0, 0, 0, 0, 0, 0, 0, 0, 0] # used for statistics
         self.GLOBAL_MERGE_COUNT = 0 # used for merge
 
+    # O(1)
+    def decode(self, chunk):
+        """
+        Generates a key.
+
+        Args:
+            chunk (bool[]) -- chunk to find key for
+        """
+        # build key
+        lookup = ""
+
+        # generate lookup key -- every number either appears once or none     
+        lookup = "".join([lookup + str(value+1) if chunk[value] else lookup + "" for value in range(self.CHUNK_SIZE)])
+        return lookup
+
+    # O(1)
+    def lookup(self, key):
+        """
+        Gets a Unicode Braille symbol for a given key.
+
+        Args:
+            key (str): The symbol's key in unicode_lookup.json
+
+        Returns:
+            Unicode Braille symbol
+        """
+        try:
+            return self.values[key][1]
+        except KeyError:
+            return self.values["BLANK"][1]
+
+    # O(n)
+    def reassemble(self, chunks, longest_message, debug, clock=-1):
+        if clock != -1:
+            clock = time.clock()
+
+        show_progress = True
+    
+        message = "[*] Reassembling..."
+
+        reassembled = []
+        for chunk in range(len(chunks)):
+            reassembled.append("".join(chunks[chunk]))
+
+            # update progress
+            if show_progress:
+                current_progress = chunk / (len(chunks) - 1)
+                show_progress = show_current_progress(current_progress, message, debug=debug)
+
+        if clock != -1:
+            td = time.clock()
+            return reassembled, out_success(message, longest_message, clock, td)
+        
+        return -1
+
     # O(n)
     def convert_chunk(self, chunks):
         """
         Converts chunks to Braille symbols.
 
         Args:
-            chunks (bool[]): The chunks to decode
+            chunks (bool[][]): The chunks to decode
 
         Returns:
             A string representing a row of Braille symbols
@@ -74,29 +129,25 @@ class DotBlock:
 
         # iterate through, decoding each chunk
         for chunk in chunks:
-            # look for matching pattern
-            lookup = "" # used to build key
-
-            # generate lookup key, O(CHUNK_SIZE) -- every number either appears once or none     
-            lookup = "".join([lookup + str(value+1) if chunk[value] else lookup + "" for value in range(self.CHUNK_SIZE)])
-            chunk_true = len(lookup)
+            key = self.decode(chunk)
+            chunk_true = len(key)
 
             self.stats[chunk_true] += 1
 
             # lookup value to append -- O(1)
-            converted.append(self.values["BLANK"][1]) if chunk_true == 0 else converted.append(self.values[lookup][1])                           
+            converted.append(self.values["BLANK"][1]) if chunk_true == 0 else converted.append(self.lookup(key))                           
 
         # return decoded string        
         return "".join(converted)
     
     # O(n)
     def merge_chunk_row(self, arr):
-        return [[
+        return [self.lookup(self.decode([
                 arr[0][0 + (2 * j)], arr[0][1 + (2 * j)],
                 arr[1][0 + (2 * j)], arr[1][1 + (2 * j)],
                 arr[2][0 + (2 * j)], arr[2][1 + (2 * j)],
                 arr[3][0 + (2 * j)], arr[3][1 + (2 * j)],            
-            ] for j in range(len(arr[0]) // 2)]
+            ])) for j in range(len(arr[0]) // 2)]
 
     # O(n^2)
     def merge_chunk(self, arr, first_run=True):
@@ -162,12 +213,12 @@ class DotBlock:
                                             ... x x ...
             '''           
             # chunk section
-            chunk = [
+            chunk = self.lookup(self.decode([
                 self.I[_ * 4][0],     self.I[_ * 4][1],
                 self.I[_ * 4 + 1][0], self.I[_ * 4 + 1][1],
                 self.I[_ * 4 + 2][0], self.I[_ * 4 + 2][1],
                 self.I[_ * 4 + 3][0], self.I[_ * 4 + 3][1],            
-            ]
+            ]))
 
             chunks.append([chunk])
 
@@ -208,12 +259,12 @@ class DotBlock:
 
         # chunk section
         for _ in range(len(chunks)): # cols of braille unicode
-            chunks[_] = [chunks[_][0]] + [[
+            chunks[_] = [chunks[_][0]] + [self.lookup(self.decode([
                 self.I[(_ * 4)][0 + (2 * j)],     self.I[(_ * 4)][1 + (2 * j)],
                 self.I[(_ * 4 + 1)][0 + (2 * j)], self.I[(_ * 4 + 1)][1 + (2 * j)],
                 self.I[(_ * 4 + 2)][0 + (2 * j)], self.I[(_ * 4 + 2)][1 + (2 * j)],
                 self.I[(_ * 4 + 3)][0 + (2 * j)], self.I[(_ * 4 + 3)][1 + (2 * j)],            
-            ] for j in range(0, self.X // 2, self.RESOLUTION_FACTOR)]
+            ])) for j in range(0, self.X // 2, self.RESOLUTION_FACTOR)]
             
 
             # update progress
@@ -228,7 +279,7 @@ class DotBlock:
         return -1
     
     # O(n^2)
-    def decode(self, chunks, longest_message, debug, clock=-1):
+    def decode_chunks(self, chunks, longest_message, debug, clock=-1):
         """
         Convert chunks to Braille symbols.
 
@@ -335,7 +386,7 @@ class DotBlock:
             # start clock for timing
             td = time.clock()
             
-            # process is O(n) + O(n^2) + O(n^2) + O(n) = O(2n^2) + O(2n) = 2 * O(n^2 + n)
+            # process is O(n) + O(n^2) + O(n) + O(n) = O(n^2 + 3n)
             if not float_size:
                 # generate chunks: O(n)
                 td = self.generate_chunks(chunks, longest_message, debug=debug, clock=td)
@@ -343,8 +394,8 @@ class DotBlock:
                 # initialize chunks: O(n^2)
                 td = self.initialize_chunks(chunks, longest_message, debug=debug, clock=td)
 
-                # decode chunks: O(n^2)
-                outfile, td = self.decode(chunks, longest_message, debug=debug, clock=td)
+                # reassemble: O(n)
+                outfile, td = self.reassemble(chunks, longest_message, debug=debug, clock=td)
 
                 # write to file: O(n)
                 self.write_to_file(filename, len(chunks), outfile, longest_message, debug=debug, clock=td)                        
@@ -354,41 +405,27 @@ class DotBlock:
             # merge decode: O(n log 2n^2)
             else:
                 merge = self.merge_chunk(self.I)
+                td2 = time.clock()
+
+                td2 = out_success("[*] Merge chunking...", longest_message, td, td2)
                 merge = [merge[i:i+(self.X // 2)] for i in range(0, len(merge), self.X // 2)]
+                merge, td2 = self.reassemble(merge, longest_message, debug=debug, clock=td)
 
-                td2 = time.clock()  
-                out_success("[*] Merge chunking...", longest_message, td, td2)
-
-                show_progress = True
-                message = "[*] Decoding..."
-
-                # update progress
-                if show_progress:
-                    current_progress = 0
-                    show_progress = show_current_progress(current_progress, message, debug=debug)
-                
-                text = [self.convert_chunk(merge[_]) for _ in range(len(merge))]
-
-                td = time.clock()
-                out_success("[*] Decoding...", longest_message, td2, td)      
-              
                 show_progress = True
                 message = "[*] Writing to file..."
                 # write to file -- O(n)
                 with open(filename, "w") as f:
-                    for line in range(len(text)):
-                        f.write(text[line] + "\n")
+                    for line in range(len(merge)):
+                        f.write(merge[line] + "\n")
                     
                         # update progress
                         if show_progress:
-                            current_progress = line / (len(text) - 1)
+                            current_progress = line / (len(merge) - 1)
                             show_progress = show_current_progress(current_progress, message, debug=debug)
                 
-                td2 = time.clock()
-                out_success("[*] Writing to file...", longest_message, td, td2)
+                td = time.clock()
+                out_success("[*] Writing to file...", longest_message, td2, td)
 
-                # for line in range(len(text)):
-                #     print(text[line])
 
         # -s (estimated runtime-complexity O(3n^2 + 2n)
         else:
@@ -423,16 +460,16 @@ class DotBlock:
                                 done = True
                         
                         # chunk section
-                        chunk = [
+                        chunk = self.lookup(self.decode([
                             self.I[i * 4][j * 2],     self.I[i * 4][j * 2 + 1],
                             self.I[i * 4 + 1][j * 2], self.I[i * 4 + 1][j * 2 + 1],
                             self.I[i * 4 + 2][j * 2], self.I[i * 4 + 2][j * 2 + 1],
                             self.I[i * 4 + 3][j * 2], self.I[i * 4 + 3][j * 2 + 1],            
-                        ]
+                        ]))
 
                         chunks.append(chunk)
 
-                    out = self.convert_chunk(chunks)
+                    out = "".join(chunks)
 
                     if debug:
                         print(out)

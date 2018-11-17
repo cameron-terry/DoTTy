@@ -1,5 +1,19 @@
 Changelog 
 ==========
+(v0.2.4) -- 2018-11-17
+======================
+### Changed
+* Converting process `2 * O(n^2 + n) --> O(n^2 + 3n)`
+    * Moved `O(1)` operations to separate functions
+        * `decode`: generates a key
+        * `lookup`: gets a Unicode Braille symbol for a given key
+    * Used operations on initialized chunks simultaneously
+        * Removes need for second pass
+        * Added new operation `reassemble`: `O(n)`
+            * recursion a viable possibility again? doubt it
+    * Process is chunk + init/decode + reassemble + write
+        * `O(n) + O(n^2) + O(n) + O(n)` 
+
 (v0.2.2) -- 2018-11-16
 ======================
 dots.py:DotBlock.convert()
@@ -12,7 +26,7 @@ dots.py:DotBlock.convert()
         * returns all rows
     * Original assumed complexity was `O(n log n^2)`
     * However, after some reasoning, the algorithm is proposed to be `O(n^2)`
-        * This algorithm runs in the same complexity as current implementation but uses more memory     
+        * This algorithm runs in the same complexity as current implementation but uses more memory
 * flag: `-m`
     * new process requires size of `km, 2n` where `k = 2^x`
     * `-m` (means run `merge`) float_size: will not run `O(n^2)` operation (code from v.0.2.1)
