@@ -34,7 +34,7 @@ class DotBlock:
         """
         
         with open('unicode_lookup.json', 'r') as fp:
-            self.values = json.load(fp)
+            self.u_braille = json.load(fp)
 
         # set cols, rows, image
         if isinstance(x, float):
@@ -85,9 +85,11 @@ class DotBlock:
             Unicode Braille symbol
         """
         try:
-            return self.values[key][1]
+            chunk_true = len(key) - 1 if len(key) > 0 else 0
+            self.stats[chunk_true] += 1
+            return self.u_braille[key][1]
         except KeyError:
-            return self.values["BLANK"][1]
+            return self.u_braille["BLANK"][1]
 
     # O(n)
     def reassemble(self, chunks, longest_message, debug, clock=-1):
@@ -131,11 +133,8 @@ class DotBlock:
         for chunk in chunks:
             key = self.gen_key(chunk)
             chunk_true = len(key)
-
-            self.stats[chunk_true] += 1
-
             # lookup value to append -- O(1)
-            converted.append(self.values["BLANK"][1]) if chunk_true == 0 else converted.append(self.lookup(key))                           
+            converted.append(self.u_braille["BLANK"][1]) if chunk_true == 0 else converted.append(self.lookup(key))                           
 
         # return decoded string        
         return "".join(converted)

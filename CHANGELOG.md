@@ -131,7 +131,7 @@ dots.py:DotBlock.convert_chunk()
 * variable `chunk_true` to quickly identify all `black/white` chunks
     * `chunk_true` tells how many pixels are white in a chunk 
         * 0 = `black`, 8 = `white` (unique combinations) -- can be resolved in `O(1)` time
-* short-circuiting searching through `self.values` via `chunk_true`
+* short-circuiting searching through `self.u_braille` via `chunk_true`
     * only check values that match the number of white pixels
     * distribution of values:
      
