@@ -9,10 +9,12 @@ Changelog
         * `lookup`: gets a Unicode Braille symbol for a given key
     * Used operations on initialized chunks simultaneously
         * Removes need for second pass
-        * Added new operation `reassemble`: `O(n)`
-            * recursion a viable possibility again? doubt it
+        
     * Process is chunk + init/decode + reassemble + write
         * `O(n) + O(n^2) + O(n) + O(n)` 
+
+### Added
+* New operation `reassemble`: `O(n)`
 
 (v0.2.2) -- 2018-11-16
 ======================
