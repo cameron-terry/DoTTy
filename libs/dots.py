@@ -98,7 +98,7 @@ class DotBlock:
                 arr[3][0 + (2 * j)], arr[3][1 + (2 * j)],            
             ] for j in range(len(arr[0]) // 2)]
 
-    # O(2^dn)
+    # O(n^2)
     def merge_chunk(self, arr, first_run=True):
         """
         Converts chunks to Braille symbols recursively.
@@ -304,7 +304,6 @@ class DotBlock:
             td = time.clock()
             out_success(message, longest_message, clock, td)
 
-    # O(n log n^2) or O(n^2), depending on user specifications
     # O(n^2) with speed and quality differences depending on version ran
     def convert(self, filename, debug=False, slow_mode=False, float_size=False):
         """
@@ -355,6 +354,8 @@ class DotBlock:
             # merge decode: O(n log 2n^2)
             else:
                 merge = self.merge_chunk(self.I)
+                merge = [merge[i:i+(self.X // 2)] for i in range(0, len(merge), self.X // 2)]
+
                 td2 = time.clock()  
                 out_success("[*] Merge chunking...", longest_message, td, td2)
 
@@ -365,7 +366,8 @@ class DotBlock:
                 if show_progress:
                     current_progress = 0
                     show_progress = show_current_progress(current_progress, message, debug=debug)
-                text = [self.convert_chunk(merge[_*4:((_+1)*4)]) for _ in range(0, len(merge) // 4, 4)]
+                
+                text = [self.convert_chunk(merge[_]) for _ in range(len(merge))]
 
                 td = time.clock()
                 out_success("[*] Decoding...", longest_message, td2, td)      
@@ -375,10 +377,8 @@ class DotBlock:
                 # write to file -- O(n)
                 with open(filename, "w") as f:
                     for line in range(len(text)):
-                        f.write(text[line])
-                        if (line + 1) % (self.X / 2) == 0:
-                            f.write("\n")
-
+                        f.write(text[line] + "\n")
+                    
                         # update progress
                         if show_progress:
                             current_progress = line / (len(text) - 1)
@@ -386,6 +386,9 @@ class DotBlock:
                 
                 td2 = time.clock()
                 out_success("[*] Writing to file...", longest_message, td, td2)
+
+                # for line in range(len(text)):
+                #     print(text[line])
 
         # -s (estimated runtime-complexity O(3n^2 + 2n)
         else:
