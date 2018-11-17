@@ -27,7 +27,7 @@ If `sizeX,sizeY` and `-l` are used, `-l` takes precedence.
 Specifying the output file is a text file is not necessary.
 
 If there are problems with the image resolution after trying `-<number>`, try using `-s`.
-Although Dotty has been optimized, there may be resolution issues when compared to the old version.
+Although DoTTy has been optimized, there may be resolution issues when compared to the old version.
 `-s` runs the original code.
 
 #### Example uses

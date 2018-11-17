@@ -73,7 +73,7 @@ class ImageConv:
             self.Y = size[1]
 
         print(DIVIDER)
-        print("Dotty, for pixels to Unicode .txt ({})".format(VERSION))
+        print("DoTTy, for pixels to Unicode .txt ({})".format(VERSION))
         print(DIVIDER)
         print("[*] Size: {rows}x{cols}".format(rows=self.X, cols=self.Y))  
         print("[*] Rows: {rows}, Cols: {cols}".format(rows=self.X // 4, cols=self.Y // 4))
