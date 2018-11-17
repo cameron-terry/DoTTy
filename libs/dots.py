@@ -59,7 +59,7 @@ class DotBlock:
         self.GLOBAL_MERGE_COUNT = 0 # used for merge
 
     # O(1)
-    def decode(self, chunk):
+    def gen_key(self, chunk):
         """
         Generates a key.
 
@@ -129,7 +129,7 @@ class DotBlock:
 
         # iterate through, decoding each chunk
         for chunk in chunks:
-            key = self.decode(chunk)
+            key = self.gen_key(chunk)
             chunk_true = len(key)
 
             self.stats[chunk_true] += 1
@@ -142,12 +142,15 @@ class DotBlock:
     
     # O(n)
     def merge_chunk_row(self, arr):
-        return [self.lookup(self.decode([
-                arr[0][0 + (2 * j)], arr[0][1 + (2 * j)],
-                arr[1][0 + (2 * j)], arr[1][1 + (2 * j)],
-                arr[2][0 + (2 * j)], arr[2][1 + (2 * j)],
-                arr[3][0 + (2 * j)], arr[3][1 + (2 * j)],            
-            ])) for j in range(len(arr[0]) // 2)]
+        try:
+            return [self.lookup(self.gen_key([
+                    arr[0][0 + (2 * j)], arr[0][1 + (2 * j)],
+                    arr[1][0 + (2 * j)], arr[1][1 + (2 * j)],
+                    arr[2][0 + (2 * j)], arr[2][1 + (2 * j)],
+                    arr[3][0 + (2 * j)], arr[3][1 + (2 * j)],            
+                ])) for j in range(len(arr[0]) // 2)]
+        except IndexError:
+            die("[-] Stupid bugs.")
 
     # O(n^2)
     def merge_chunk(self, arr, first_run=True):
@@ -213,12 +216,15 @@ class DotBlock:
                                             ... x x ...
             '''           
             # chunk section
-            chunk = self.lookup(self.decode([
-                self.I[_ * 4][0],     self.I[_ * 4][1],
-                self.I[_ * 4 + 1][0], self.I[_ * 4 + 1][1],
-                self.I[_ * 4 + 2][0], self.I[_ * 4 + 2][1],
-                self.I[_ * 4 + 3][0], self.I[_ * 4 + 3][1],            
-            ]))
+            try:
+                chunk = self.lookup(self.gen_key([
+                    self.I[_ * 4][0],     self.I[_ * 4][1],
+                    self.I[_ * 4 + 1][0], self.I[_ * 4 + 1][1],
+                    self.I[_ * 4 + 2][0], self.I[_ * 4 + 2][1],
+                    self.I[_ * 4 + 3][0], self.I[_ * 4 + 3][1],            
+                ]))
+            except IndexError:
+                die("[-] Stupid bugs.")
 
             chunks.append([chunk])
 
@@ -259,13 +265,15 @@ class DotBlock:
 
         # chunk section
         for _ in range(len(chunks)):
-            chunks[_] = [chunks[_][0]] + [self.lookup(self.decode([
-                self.I[(_ * 4)][0 + (2 * j)],     self.I[(_ * 4)][1 + (2 * j)],
-                self.I[(_ * 4 + 1)][0 + (2 * j)], self.I[(_ * 4 + 1)][1 + (2 * j)],
-                self.I[(_ * 4 + 2)][0 + (2 * j)], self.I[(_ * 4 + 2)][1 + (2 * j)],
-                self.I[(_ * 4 + 3)][0 + (2 * j)], self.I[(_ * 4 + 3)][1 + (2 * j)],            
-            ])) for j in range(0, self.X // 2, self.RESOLUTION_FACTOR)]
-            
+            try:
+                chunks[_] = [chunks[_][0]] + [self.lookup(self.gen_key([
+                    self.I[(_ * 4)][0 + (2 * j)],     self.I[(_ * 4)][1 + (2 * j)],
+                    self.I[(_ * 4 + 1)][0 + (2 * j)], self.I[(_ * 4 + 1)][1 + (2 * j)],
+                    self.I[(_ * 4 + 2)][0 + (2 * j)], self.I[(_ * 4 + 2)][1 + (2 * j)],
+                    self.I[(_ * 4 + 3)][0 + (2 * j)], self.I[(_ * 4 + 3)][1 + (2 * j)],            
+                ])) for j in range(0, self.X // 2, self.RESOLUTION_FACTOR)]
+            except IndexError:
+                die("[-] Stupid bugs.")
 
             # update progress
             if show_progress:
@@ -460,12 +468,15 @@ class DotBlock:
                                 done = True
                         
                         # chunk section
-                        chunk = self.lookup(self.decode([
-                            self.I[i * 4][j * 2],     self.I[i * 4][j * 2 + 1],
-                            self.I[i * 4 + 1][j * 2], self.I[i * 4 + 1][j * 2 + 1],
-                            self.I[i * 4 + 2][j * 2], self.I[i * 4 + 2][j * 2 + 1],
-                            self.I[i * 4 + 3][j * 2], self.I[i * 4 + 3][j * 2 + 1],            
-                        ]))
+                        try:
+                            chunk = self.lookup(self.gen_key([
+                                self.I[i * 4][j * 2],     self.I[i * 4][j * 2 + 1],
+                                self.I[i * 4 + 1][j * 2], self.I[i * 4 + 1][j * 2 + 1],
+                                self.I[i * 4 + 2][j * 2], self.I[i * 4 + 2][j * 2 + 1],
+                                self.I[i * 4 + 3][j * 2], self.I[i * 4 + 3][j * 2 + 1],            
+                            ]))
+                        except IndexError:
+                            die("[-] Stupid bugs.")
 
                         chunks.append(chunk)
 
