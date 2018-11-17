@@ -258,7 +258,7 @@ class DotBlock:
         message = "[*] Initializing..."
 
         # chunk section
-        for _ in range(len(chunks)): # cols of braille unicode
+        for _ in range(len(chunks)):
             chunks[_] = [chunks[_][0]] + [self.lookup(self.decode([
                 self.I[(_ * 4)][0 + (2 * j)],     self.I[(_ * 4)][1 + (2 * j)],
                 self.I[(_ * 4 + 1)][0 + (2 * j)], self.I[(_ * 4 + 1)][1 + (2 * j)],
