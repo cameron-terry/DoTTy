@@ -89,31 +89,46 @@ class DotBlock:
         # return decoded string        
         return "".join(converted)
     
-    # O(n log 2n^2) = O(n log n^2)
-    def merge_decode(self, arr):
-        if len(arr) < 4:
-            die("[!] Underflow")
-        elif len(arr) == 4:
-            # chunk each row -- O(n)
-            chunks = [[
+    # O(n)
+    def merge_chunk_row(self, arr):
+        return [[
                 arr[0][0 + (2 * j)], arr[0][1 + (2 * j)],
                 arr[1][0 + (2 * j)], arr[1][1 + (2 * j)],
                 arr[2][0 + (2 * j)], arr[2][1 + (2 * j)],
                 arr[3][0 + (2 * j)], arr[3][1 + (2 * j)],            
             ] for j in range(len(arr[0]) // 2)]
-            
-            # O(n)
-            return self.convert_chunk(chunks)
-        else:
-            current_progress = self.GLOBAL_MERGE_COUNT / (self.Y // 4)
 
-            left = self.merge_decode(arr[:len(arr)//2])
-            right = self.merge_decode(arr[len(arr)//2:])
+    # O(2^dn)
+    def merge_chunk(self, arr, first_run=True):
+        """
+        Converts chunks to Braille symbols recursively.
 
+        Args:
+            arr (bool[]): The chunks to decode
+
+        Returns:
+            A grid of Braille symbols
+        """
+        # return chunk
+        if len(arr) == 4:           
             self.GLOBAL_MERGE_COUNT += 1
+
+            # O(n)
+            return self.merge_chunk_row(arr)            
+        # split array
+        elif len(arr) > 4:
+            left = self.merge_chunk(arr[:len(arr)//2], first_run=False)
+            right = self.merge_chunk(arr[len(arr)//2:], first_run=False)
+
+            current_progress = self.GLOBAL_MERGE_COUNT / (self.Y // 4)
             
-            show_current_progress(current_progress, "[*] Merge decoding...")
-            return left + right
+            show_current_progress(current_progress, "[*] Merge chunking...")
+            merge = left + right
+
+            return merge
+        # shouldn't be here, something went wrong during initialization
+        else:
+            die("[!] Underflow")
 
     # O(n)
     def generate_chunks(self, chunks, longest_message, debug, clock=-1):
@@ -339,16 +354,38 @@ class DotBlock:
                     print_stats(self.stats)
             # merge decode: O(n log 2n^2)
             else:
-                text = self.merge_decode(self.I)
-                td2 = time.clock()
-                out_success("[*] Merge decoding...", longest_message, td, td2)
+                merge = self.merge_chunk(self.I)
+                td2 = time.clock()  
+                out_success("[*] Merge chunking...", longest_message, td, td2)
 
+                show_progress = True
+                message = "[*] Decoding..."
+
+                # update progress
+                if show_progress:
+                    current_progress = 0
+                    show_progress = show_current_progress(current_progress, message, debug=debug)
+                text = [self.convert_chunk(merge[_*4:((_+1)*4)]) for _ in range(0, len(merge) // 4, 4)]
+
+                td = time.clock()
+                out_success("[*] Decoding...", longest_message, td2, td)      
+              
+                show_progress = True
+                message = "[*] Writing to file..."
                 # write to file -- O(n)
                 with open(filename, "w") as f:
                     for line in range(len(text)):
                         f.write(text[line])
                         if (line + 1) % (self.X / 2) == 0:
                             f.write("\n")
+
+                        # update progress
+                        if show_progress:
+                            current_progress = line / (len(text) - 1)
+                            show_progress = show_current_progress(current_progress, message, debug=debug)
+                
+                td2 = time.clock()
+                out_success("[*] Writing to file...", longest_message, td, td2)
 
         # -s (estimated runtime-complexity O(3n^2 + 2n)
         else:
