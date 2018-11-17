@@ -5,19 +5,24 @@ Changelog
 dots.py:DotBlock.convert()
 --------------------------
 ### Added
-* Chunking process (`O(n^2) --> O(n log n^2)`)
+* Chunking process (`O(n^2) --> ?`)
     * Algorithm is recursive (variation of merge)
         * merge process recursively splits the image data in half, row-wise: `O(n log n)`
         * runs indexing/lookup `O(n)` on the individual rows
         * returns all rows
-    * full `DotBlock.convert()` process is approximately `O(n log n^2 + n)`
+    * Original assumed complexity was `O(n log n^2)`
+    * However, after some reasoning, the algorithm is proposed to be `O(n^2)`
+        * This algorithm runs in the same complexity as current implementation but uses more memory     
 * flag: `-m`
     * new process requires size of `km, 2n` where `k = 2^x`
-    * `-m` (means run `merge`) float_size: will run `O(n^2)` operation (code from v.0.2.1)
+    * `-m` (means run `merge`) float_size: will not run `O(n^2)` operation (code from v.0.2.1)
         * `-s` takes precedence over `-f`
     * in testing, this algorithm runs worse than current implementation
         * direct indexing >> recursize overlay in this case, it seems
-            * although quite possible implementation is not great yet
+            * see more [here](https://github.com/roudiere/dotty/wiki/Misc#merge-algorithm)
+        * when testing against `kingfisher.jpg`, times were as follows:
+            * `-lnm`: `0.4467, 0.5045, 0.5368`
+            * `960,1064 -n`: `0.5597, 0.5626, 0.4478`
 
 (v0.2.1) -- 2018-11-15
 ======================
