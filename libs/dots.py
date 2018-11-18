@@ -293,7 +293,7 @@ class DotBlock:
             td = time.clock()
             
             # process is O(n) + O(n^2) + O(n) + O(n) = O(n^2 + 3n)
-            if not float_size:
+            if not float_size:                
                 # generate starting chunks: O(n)
                 td = self.generate_chunks(chunks, longest_message, debug=debug, clock=td)
                 
@@ -308,31 +308,24 @@ class DotBlock:
             
                 if debug:
                     print_stats(self.stats)
-            # merge decode: O(n^2)
+            # merge decode: O(n)???
             else:
-                merge = self.merge_chunk(self.I)
+                current_progress = 0
+                show_current_progress(current_progress, "[*] Merge decoding...")
+                out = self.recur_decode(self.I)
                 td2 = time.clock()
 
-                td2 = out_success("[*] Merge chunking...", longest_message, td, td2)
-                merge = [merge[i:i+(self.X // 2)] for i in range(0, len(merge), self.X // 2)]
-                merge, td2 = self.reassemble(merge, longest_message, debug=debug, clock=td)
+                td2 = out_success("[*] Merge decoding...", longest_message, td, td2)
 
                 show_progress = True
                 message = "[*] Writing to file..."
                 
-                with open(filename, "w") as f:
-                    for line in range(len(merge)):
-                        f.write(merge[line] + "\n")
-                    
-                        # update progress
-                        if show_progress:
-                            current_progress = line / (len(merge) - 1)
-                            show_progress = show_current_progress(current_progress, message, debug=debug)
-                
+                with open(filename, "w") as f:    
+                    # update progress
+                    f.writelines(out)
+                                  
                 td = time.clock()
                 out_success("[*] Writing to file...", longest_message, td2, td)
-
-
         # -s (estimated runtime-complexity O(3n^2 + 2n)
         else:
             print("\n[*] Slow mode enabled, now chunking 1 at a time.")
@@ -398,6 +391,75 @@ class DotBlock:
     
     ## Experimental algorithms
 
+    def recur_decode(self, arr):
+        # base cases
+        if len(arr) == 4:
+            # base case -- have a chunk
+            if len(arr[0]) == 2:
+                self.GLOBAL_MERGE_COUNT += 1
+                return self.decode([
+                    arr[0][0], arr[0][1],
+                    arr[1][0], arr[1][1],
+                    arr[2][0], arr[2][1],
+                    arr[3][0], arr[3][1]
+                ])
+
+            # semi base case, the row -- can't divide length wise anymore
+            # split columns in 2
+
+            # can split in half
+            if (len(arr[0]) // 2) % 2 == 0:
+                arr_1 = [row[:len(arr[0]) // 2] for row in arr] # first half
+                arr_2 = [row[len(arr[0]) // 2:] for row in arr] # second half
+                result_l = self.recur_decode(arr_1)
+                result_r = self.recur_decode(arr_2)
+                # check size of reassembled list
+                return result_l + result_r if len(arr[0]) != self.X else result_l + result_r + "\n"
+            # cannot split directly in half -- remove the middle and split the other two
+            else:
+                # [:(n-d)/2], [(n-d)/2:n/2], [n/2:], n = len(row), d = 2
+                arr_1  = [row[:(len(row) - 2) // 2] for row in arr] # first portion
+                middle = [row[(len(row) - 2) // 2:(len(row) + 2) // 2] for row in arr] # middle
+                arr_2  = [row[(len(row) + 2) // 2:] for row in arr] # second portion
+                result_l = self.recur_decode(arr_1)
+                try:
+                    result_m = self.decode([
+                        middle[0][0], middle[0][1],
+                        middle[1][0], middle[1][1],
+                        middle[2][0], middle[2][1],
+                        middle[3][0], middle[3][1],
+                    ])
+                except IndexError:
+                    print(arr_1)
+                    print(middle)
+                    print(arr_2)
+                    exit(0)
+                result_r = self.recur_decode(arr_2)
+                # check size of reassembled list
+                return result_l + result_m + result_r if len(arr[0]) != self.X else result_l + result_r + "\n"
+        # split rows in 4
+        elif len(arr) > 4:
+            # can split in half
+            if (len(arr) // 4) % 2 == 0:
+                arr_1 = arr[:len(arr) // 2] # first half
+                arr_2 = arr[len(arr) // 2:] # second half                
+                result_l = self.recur_decode(arr_1)
+                result_r = self.recur_decode(arr_2)               
+                return result_l + result_r
+            # cannot split directly in half -- remove the middle and split the other two
+            else:
+                # [:(n-d)/2], [(n-d)/2:n/2], [n/2:], n = len(row), d = 4
+                arr_1  = arr[:(len(arr) - 4) // 2]
+                middle = arr[(len(arr) - 4) // 2:(len(arr) + 4) // 2]
+                arr_2  = arr[(len(arr) + 4) // 2:]
+                result_l = self.recur_decode(arr_1)
+                middle = self.recur_decode(middle)
+                result_r = self.recur_decode(arr_2)
+                return result_l + middle + result_r
+        else:
+            print(len(arr), len(arr[0]))
+            die("Error")
+    
     # O(n)
     def merge_chunk_row(self, arr):
         try:
