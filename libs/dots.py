@@ -94,6 +94,10 @@ class DotBlock:
         except KeyError:
             return self.u_braille["BLANK"][1]
 
+    # O(1)
+    def decode(self, chunk):
+        return self.lookup(self.gen_key(chunk))
+
     # O(n)
     def reassemble(self, chunks, longest_message, debug, clock=-1):
         if clock != -1:
@@ -117,74 +121,6 @@ class DotBlock:
             return reassembled, out_success(message, longest_message, clock, td)
         
         return -1
-
-    # O(n)
-    def convert_chunk(self, chunks):
-        """
-        Converts chunks to Braille symbols.
-
-        Args:
-            chunks (bool[][]): The chunks to decode
-
-        Returns:
-            A string representing a row of Braille symbols
-        """
-        # init array to hold values
-        converted = []
-
-        # iterate through, decoding each chunk
-        for chunk in chunks:
-            key = self.gen_key(chunk)
-            chunk_true = len(key)
-            # lookup value to append -- O(1)
-            converted.append(self.u_braille["BLANK"][1]) if chunk_true == 0 else converted.append(self.lookup(key))                           
-
-        # return decoded string        
-        return "".join(converted)
-    
-    # O(n)
-    def merge_chunk_row(self, arr):
-        try:
-            return [self.lookup(self.gen_key([
-                    arr[0][0 + (2 * j)], arr[0][1 + (2 * j)],
-                    arr[1][0 + (2 * j)], arr[1][1 + (2 * j)],
-                    arr[2][0 + (2 * j)], arr[2][1 + (2 * j)],
-                    arr[3][0 + (2 * j)], arr[3][1 + (2 * j)],            
-                ])) for j in range(len(arr[0]) // 2)]
-        except IndexError:
-            die("[-] Stupid bugs.")
-
-    # O(n^2)
-    def merge_chunk(self, arr, first_run=True):
-        """
-        Converts chunks to Braille symbols recursively.
-
-        Args:
-            arr (bool[]): The chunks to decode
-
-        Returns:
-            A grid of Braille symbols
-        """
-        # return chunk
-        if len(arr) == 4:           
-            self.GLOBAL_MERGE_COUNT += 1
-
-            # O(n)
-            return self.merge_chunk_row(arr)            
-        # split array
-        elif len(arr) > 4:
-            left = self.merge_chunk(arr[:len(arr)//2], first_run=False)
-            right = self.merge_chunk(arr[len(arr)//2:], first_run=False)
-
-            current_progress = self.GLOBAL_MERGE_COUNT / (self.Y // 4)
-            
-            show_current_progress(current_progress, "[*] Merge chunking...")
-            merge = left + right
-
-            return merge
-        # shouldn't be here, something went wrong during initialization
-        else:
-            die("[!] Underflow")
 
     # O(n)
     def generate_chunks(self, chunks, longest_message, debug, clock=-1):
@@ -219,12 +155,12 @@ class DotBlock:
             '''           
             # chunk section
             try:
-                chunk = self.lookup(self.gen_key([
+                chunk = self.decode([
                     self.I[_ * 4][0],     self.I[_ * 4][1],
                     self.I[_ * 4 + 1][0], self.I[_ * 4 + 1][1],
                     self.I[_ * 4 + 2][0], self.I[_ * 4 + 2][1],
                     self.I[_ * 4 + 3][0], self.I[_ * 4 + 3][1],            
-                ]))
+                ])
             except IndexError:
                 die("[-] Stupid bugs.")
 
@@ -265,15 +201,15 @@ class DotBlock:
     
         message = "[*] Initializing..."
 
-        # chunk section
+        # horizontal iteration
         for _ in range(len(chunks)):
             try:
-                chunks[_] = [chunks[_][0]] + [self.lookup(self.gen_key([
+                chunks[_] = [chunks[_][0]] + [self.decode([
                     self.I[(_ * 4)][0 + (2 * j)],     self.I[(_ * 4)][1 + (2 * j)],
                     self.I[(_ * 4 + 1)][0 + (2 * j)], self.I[(_ * 4 + 1)][1 + (2 * j)],
                     self.I[(_ * 4 + 2)][0 + (2 * j)], self.I[(_ * 4 + 2)][1 + (2 * j)],
                     self.I[(_ * 4 + 3)][0 + (2 * j)], self.I[(_ * 4 + 3)][1 + (2 * j)],            
-                ])) for j in range(0, self.X // 2, self.RESOLUTION_FACTOR)]
+                ]) for j in range(0, self.X // 2, self.RESOLUTION_FACTOR)]
             except IndexError:
                 die("[-] Stupid bugs.")
 
@@ -285,46 +221,6 @@ class DotBlock:
         if clock != -1:
             td = time.clock()
             return out_success(message, longest_message, clock, td)
-        
-        return -1
-    
-    # O(n^2)
-    def decode_chunks(self, chunks, longest_message, debug, clock=-1):
-        """
-        Convert chunks to Braille symbols.
-
-        Args:
-            chunks(int): Re-grouped image data
-
-            longest_message (str): Longest message displayed on console
-
-            debug (bool): Show additional information
-
-            clock (float, optional): Show operation times. Defaults to -1 which means no info will be shown.
-        
-        Returns:
-            outfile (Unicode[]): Array of braille symbols
-
-            td: Clock information
-        """
-        show_progress = True
-
-        outfile = []
-        message = "[*] Decoding..."
-
-        # chunk the image
-        for c in range(len(chunks)): # rows of braille unicode
-            row = self.convert_chunk(chunks[c])
-            outfile.append(row)
-
-            # update progress
-            if show_progress:
-                current_progress = c / (len(chunks) - 1)
-                show_progress = show_current_progress(current_progress, message, debug=debug)
-        
-        if clock != -1:
-            td = time.clock()
-            return outfile, out_success(message, longest_message, clock, td)
         
         return -1
 
@@ -398,10 +294,10 @@ class DotBlock:
             
             # process is O(n) + O(n^2) + O(n) + O(n) = O(n^2 + 3n)
             if not float_size:
-                # generate chunks: O(n)
+                # generate starting chunks: O(n)
                 td = self.generate_chunks(chunks, longest_message, debug=debug, clock=td)
                 
-                # initialize chunks: O(n^2)
+                # initialize remaining chunks: O(n^2)
                 td = self.initialize_chunks(chunks, longest_message, debug=debug, clock=td)
 
                 # reassemble: O(n)
@@ -412,7 +308,7 @@ class DotBlock:
             
                 if debug:
                     print_stats(self.stats)
-            # merge decode: O(n log 2n^2)
+            # merge decode: O(n^2)
             else:
                 merge = self.merge_chunk(self.I)
                 td2 = time.clock()
@@ -423,7 +319,7 @@ class DotBlock:
 
                 show_progress = True
                 message = "[*] Writing to file..."
-                # write to file -- O(n)
+                
                 with open(filename, "w") as f:
                     for line in range(len(merge)):
                         f.write(merge[line] + "\n")
@@ -471,12 +367,12 @@ class DotBlock:
                         
                         # chunk section
                         try:
-                            chunk = self.lookup(self.gen_key([
+                            chunk = self.decode([
                                 self.I[i * 4][j * 2],     self.I[i * 4][j * 2 + 1],
                                 self.I[i * 4 + 1][j * 2], self.I[i * 4 + 1][j * 2 + 1],
                                 self.I[i * 4 + 2][j * 2], self.I[i * 4 + 2][j * 2 + 1],
                                 self.I[i * 4 + 3][j * 2], self.I[i * 4 + 3][j * 2 + 1],            
-                            ]))
+                            ])
                         except IndexError:
                             die("[-] Stupid bugs.")
 
@@ -500,3 +396,48 @@ class DotBlock:
         print(DIVIDER)
         print("[+] Output sent to {}.".format(filename))
     
+    ## Experimental algorithms
+
+    # O(n)
+    def merge_chunk_row(self, arr):
+        try:
+            return [self.lookup(self.gen_key([
+                    arr[0][0 + (2 * j)], arr[0][1 + (2 * j)],
+                    arr[1][0 + (2 * j)], arr[1][1 + (2 * j)],
+                    arr[2][0 + (2 * j)], arr[2][1 + (2 * j)],
+                    arr[3][0 + (2 * j)], arr[3][1 + (2 * j)],            
+                ])) for j in range(len(arr[0]) // 2)]
+        except IndexError:
+            die("[-] Stupid bugs.")
+
+    # O(n^2)
+    def merge_chunk(self, arr, first_run=True):
+        """
+        Converts chunks to Braille symbols recursively.
+
+        Args:
+            arr (bool[]): The chunks to decode
+
+        Returns:
+            A grid of Braille symbols
+        """
+        # return chunk
+        if len(arr) == 4:           
+            self.GLOBAL_MERGE_COUNT += 1
+
+            # O(n)
+            return self.merge_chunk_row(arr)            
+        # split array
+        elif len(arr) > 4:
+            left = self.merge_chunk(arr[:len(arr)//2], first_run=False)
+            right = self.merge_chunk(arr[len(arr)//2:], first_run=False)
+
+            current_progress = self.GLOBAL_MERGE_COUNT / (self.Y // 4)
+            
+            show_current_progress(current_progress, "[*] Merge chunking...")
+            merge = left + right
+
+            return merge
+        # shouldn't be here, something went wrong during initialization
+        else:
+            die("[!] Underflow")
