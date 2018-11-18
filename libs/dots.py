@@ -308,7 +308,7 @@ class DotBlock:
             
                 if debug:
                     print_stats(self.stats)
-            # merge decode: O(n)???
+            # merge decode: O(n^2)
             else:
                 current_progress = 0
                 show_current_progress(current_progress, "[*] Merge decoding...")
@@ -389,14 +389,14 @@ class DotBlock:
         print(DIVIDER)
         print("[+] Output sent to {}.".format(filename))
     
-    ## Experimental algorithms
+    #### Experimental algorithms
 
+    # O (n^2)
     def recur_decode(self, arr):
         # base cases
         if len(arr) == 4:
             # base case -- have a chunk
             if len(arr[0]) == 2:
-                self.GLOBAL_MERGE_COUNT += 1
                 return self.decode([
                     arr[0][0], arr[0][1],
                     arr[1][0], arr[1][1],
@@ -417,11 +417,12 @@ class DotBlock:
                 return result_l + result_r if len(arr[0]) != self.X else result_l + result_r + "\n"
             # cannot split directly in half -- remove the middle and split the other two
             else:
-                # [:(n-d)/2], [(n-d)/2:n/2], [n/2:], n = len(row), d = 2
+                # [:(n-d)/2], [(n-d)/2:(n+d)/2], [(n+d)/2:], n = len(row), d = 2
                 arr_1  = [row[:(len(row) - 2) // 2] for row in arr] # first portion
                 middle = [row[(len(row) - 2) // 2:(len(row) + 2) // 2] for row in arr] # middle
                 arr_2  = [row[(len(row) + 2) // 2:] for row in arr] # second portion
                 result_l = self.recur_decode(arr_1)
+
                 try:
                     result_m = self.decode([
                         middle[0][0], middle[0][1],
@@ -430,10 +431,8 @@ class DotBlock:
                         middle[3][0], middle[3][1],
                     ])
                 except IndexError:
-                    print(arr_1)
-                    print(middle)
-                    print(arr_2)
-                    exit(0)
+                    die("IndexError: error in slicing cols")
+
                 result_r = self.recur_decode(arr_2)
                 # check size of reassembled list
                 return result_l + result_m + result_r if len(arr[0]) != self.X else result_l + result_r + "\n"
@@ -448,12 +447,17 @@ class DotBlock:
                 return result_l + result_r
             # cannot split directly in half -- remove the middle and split the other two
             else:
-                # [:(n-d)/2], [(n-d)/2:n/2], [n/2:], n = len(row), d = 4
+                # [:(n-d)/2], [(n-d)/2:(n+d)/2], [(n+d)/2:], n = len(row), d = 4
                 arr_1  = arr[:(len(arr) - 4) // 2]
                 middle = arr[(len(arr) - 4) // 2:(len(arr) + 4) // 2]
                 arr_2  = arr[(len(arr) + 4) // 2:]
                 result_l = self.recur_decode(arr_1)
-                middle = self.recur_decode(middle)
+
+                try:
+                    middle = self.recur_decode(middle)
+                except IndexError:
+                    die("IndexError: error in slicing rows")
+
                 result_r = self.recur_decode(arr_2)
                 return result_l + middle + result_r
         else:
