@@ -5,7 +5,7 @@ Changelog
 ### Changed
 * Converting process `2 * O(n^2 + n) --> O(n^2 + 3n)`
     * Moved `O(1)` operations to separate functions
-        * `decode`: generates a key
+        * `gen_key`: generates a key
         * `lookup`: gets a Unicode Braille symbol for a given key
     * Used operations on initialized chunks simultaneously
         * Removes need for second pass
