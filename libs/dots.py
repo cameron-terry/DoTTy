@@ -65,6 +65,9 @@ class DotBlock:
 
         Args:
             chunk (bool[]) -- chunk to find key for
+
+        Returns:
+            A key in the Unicode dictionary
         """
         # build key
         lookup = ""
