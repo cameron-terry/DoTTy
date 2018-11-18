@@ -1,4 +1,4 @@
-import numpy as np
+from numpy import ndarray
 import time, sys
 import json
 
@@ -45,7 +45,7 @@ class DotBlock:
             y = int(y)
         if not isinstance(y, int):
             die("[!] Height must be an int")
-        if not isinstance(img, np.ndarray):
+        if not isinstance(img, ndarray):
             die("[!] Image was not converted properly")
 
         self.X = x
