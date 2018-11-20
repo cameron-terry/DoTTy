@@ -35,7 +35,7 @@ dots.py:DotBlock.convert()
         * `-s` takes precedence over `-f`
     * in testing, this algorithm runs worse than current implementation
         * direct indexing >> recursize overlay in this case, it seems
-            * see more [here](https://github.com/roudiere/dotty/wiki/Misc#merge-algorithm)
+            * see more [here](https://github.com/roudiere/dotty/wiki/Misc#testing)
         * when testing against `kingfisher.jpg`, times were as follows:
             * `-lnm`: `0.4467, 0.5045, 0.5368`
             * `960,1064 -n`: `0.5597, 0.5626, 0.4478`
